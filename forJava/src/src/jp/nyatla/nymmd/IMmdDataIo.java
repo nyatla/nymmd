@@ -3,7 +3,7 @@
  * --------------------------------------------------------------------------------
  * This work is based on the ARTK_MMD v0.1 
  *   PY
- * http://ppyy.web.fc2.com/
+ * http://ppyy.hp.infoseek.co.jp/
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
@@ -33,7 +33,7 @@ package jp.nyatla.nymmd;
 
 import java.io.*;
 
-public interface MmdDataIo
+public interface IMmdDataIo
 {
 	/**
 	 * i_nameを読みだすinputstreamを要求する。

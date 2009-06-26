@@ -3,7 +3,7 @@
  * --------------------------------------------------------------------------------
  * This work is based on the ARTK_MMD v0.1 
  *   PY
- * http://ppyy.web.fc2.com/
+ * http://ppyy.hp.infoseek.co.jp/
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
@@ -37,6 +37,6 @@ import jp.nyatla.nymmd.MmdException;
 
 public interface StructType
 {
-	public abstract void read(DataReader i_reader) throws MmdException;
+	public void read(DataReader i_reader) throws MmdException;
 	
 }

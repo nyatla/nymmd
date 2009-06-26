@@ -1,7 +1,7 @@
 NyMmd
 Copyright (C)2009 nyatla
 
-version 1.0.0
+version 1.0.1
 
 http://nyatla.jp/
 wm(at)nyatla.jp
@@ -14,7 +14,7 @@ ARToolKit依存のコードを取り除いて、他言語対応に向けてAPI�
 整備し直したクラスライブリです。
 
 ARTK_MMDはこちらで公開されています。
-http://ppyy.web.fc2.com/
+http://ppyy.hp.infoseek.co.jp/
 
 
 NyMmdは、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能を持ちます。
@@ -68,7 +68,7 @@ GPLについては、LICENCE.txtをお読みください。
 PY さん
  ARTK_MMDを開発し、ソースコードを公開してくださいました。
  有難うございます。
- http://ppyy.web.fc2.com/
+ http://ppyy.hp.infoseek.co.jp/
 
 樋口M さん
  MikuMikuDanceを開発してくださいました。

@@ -3,7 +3,7 @@
  * --------------------------------------------------------------------------------
  * This work is based on the ARTK_MMD v0.1 
  *   PY
- * http://ppyy.web.fc2.com/
+ * http://ppyy.hp.infoseek.co.jp/
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
@@ -109,7 +109,7 @@ class GLTextureList
 		return ret;
 	}
 
-	public GLTextureData getTexture(String i_filename, MmdDataIo i_io) throws MmdException
+	public GLTextureData getTexture(String i_filename, IMmdDataIo i_io) throws MmdException
 	{
 		GLTextureData ret;
 
@@ -171,7 +171,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 	 * レンダリング対象のPMDを設定する。
 	 * @param i_pmd
 	 */
-	public void setPmd(MmdPmdModel i_pmd, MmdDataIo i_io) throws MmdException
+	public void setPmd(MmdPmdModel i_pmd, IMmdDataIo i_io) throws MmdException
 	{
 		// テクスチャリストのリセット
 		this._textures.reset();

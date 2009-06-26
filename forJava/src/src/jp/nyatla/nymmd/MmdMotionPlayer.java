@@ -3,7 +3,7 @@
  * --------------------------------------------------------------------------------
  * This work is based on the ARTK_MMD v0.1 
  *   PY
- * http://ppyy.web.fc2.com/
+ * http://ppyy.hp.infoseek.co.jp/
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
@@ -210,6 +210,9 @@ public class MmdMotionPlayer
 			getMotionPosRot(pMotionDataList[i], m_fFrame,vec3Position,vec4Rotate);
 
 			// 補間なし
+			if(ppBone[i]==null){
+				continue;
+			}
 			ppBone[i].m_vec3Position.setValue(vec3Position);
 			ppBone[i].m_vec4Rotate.setValue(vec4Rotate);
 
@@ -227,7 +230,11 @@ public class MmdMotionPlayer
 		for(int i=0;i<pFaceDataList.length;i++)
 		{
 			final float fFaceRate = getFaceRate( pFaceDataList[i], m_fFrame );
+			if(ppFace[i]==null){
+				continue;
+			}
 
+			
 			if( fFaceRate == 1.0f ){
 				ppFace[i].setFace(position_array);
 			}else if( 0.001f < fFaceRate ){

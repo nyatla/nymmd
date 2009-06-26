@@ -10,7 +10,7 @@ import jp.nyatla.nymmd.*;
 
 import com.sun.opengl.util.*;
 
-class FileIO implements MmdDataIo
+class FileIO implements IMmdDataIo
 {
 	private String _dir;
 	public FileIO(String i_dir)
@@ -50,7 +50,7 @@ public class MmdTest implements GLEventListener
 
 	private IMmdPmdRender _render;
 	
-	private MmdDataIo _data_io;
+	private IMmdDataIo _data_io;
 
 	public MmdTest() throws MmdException, IOException
 	{
