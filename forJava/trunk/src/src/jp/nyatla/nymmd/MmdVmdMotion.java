@@ -74,14 +74,7 @@ public class MmdVmdMotion
 
 	public MmdVmdMotion(InputStream i_stream) throws MmdException
 	{
-		try{
-			// ファイルサイズを予測
-			if(!initialize(i_stream)){
-				throw new MmdException();
-			}
-		}catch(Exception e){
-			throw new MmdException(e);
-		}
+		initialize(i_stream);
 		return;
 	}
 
@@ -110,7 +103,7 @@ public class MmdVmdMotion
 		tmp_vmd_header.read(reader);
 		if(!tmp_vmd_header.szHeader.equalsIgnoreCase("Vocaloid Motion Data 0002"))
 		{
-			return false;
+			throw new MmdException();
 		}
 		//ボーンと最大フレームを取得
 		float[] max_frame=new float[1];
@@ -131,21 +124,23 @@ public class MmdVmdMotion
 		Vector<FaceData> result=new Vector<FaceData>();
 		int ulNumFaceKeyFrames=i_reader.readInt();	
 
-		// モーションデータ中の表情ごとのキーフレーム数をカウント
-		VMD_Face tmp_vmd_face = new VMD_Face();
+		//規定フレーム数分表情を読み込み
+		VMD_Face[] tmp_vmd_face=new VMD_Face[ulNumFaceKeyFrames];
+		for(int i=0;i<ulNumFaceKeyFrames;i++){
+			tmp_vmd_face[i]= new VMD_Face();
+			tmp_vmd_face[i].read(i_reader);
+		}
 		float max_frame=0.0f;
-		i_reader.mark();
 		for(int i = 0 ; i < ulNumFaceKeyFrames ; i++)
 		{
-			tmp_vmd_face.read(i_reader);
-			if(max_frame < (float)tmp_vmd_face.ulFrameNo ){
-				max_frame = (float)tmp_vmd_face.ulFrameNo;	// 最大フレーム更新
+			if(max_frame < (float)tmp_vmd_face[i].ulFrameNo ){
+				max_frame = (float)tmp_vmd_face[i].ulFrameNo;	// 最大フレーム更新
 			}
 			boolean is_found=false;
 			for(int i2=0;i2<result.size();i2++)
 			{
 				final FaceData pFaceTemp = result.get(i2);
-				if(pFaceTemp.szFaceName.equals(tmp_vmd_face.szFaceName))
+				if(pFaceTemp.szFaceName.equals(tmp_vmd_face[i].szFaceName))
 				{
 					// リストに追加済み
 					pFaceTemp.ulNumKeyFrames++;
@@ -158,7 +153,7 @@ public class MmdVmdMotion
 			{
 				// リストにない場合は新規ノードを追加
 				FaceData pNew = new FaceData();
-				pNew.szFaceName=tmp_vmd_face.szFaceName;
+				pNew.szFaceName=tmp_vmd_face[i].szFaceName;
 				pNew.ulNumKeyFrames = 1;
 				result.add(pNew);
 			}
@@ -173,19 +168,17 @@ public class MmdVmdMotion
 		}
 		
 		// 表情ごとにキーフレームを格納
-		i_reader.reset();
 		for(int i = 0 ; i < ulNumFaceKeyFrames ; i++)
 		{
-			tmp_vmd_face.read(i_reader);
 			for(int i2=0;i2<result.size();i2++)
 			{
 				FaceData pFaceTemp = result.get(i2);
-				if(pFaceTemp.szFaceName.equals(tmp_vmd_face.szFaceName))
+				if(pFaceTemp.szFaceName.equals(tmp_vmd_face[i].szFaceName))
 				{
 					FaceKeyFrame pKeyFrame = pFaceTemp.pKeyFrames[pFaceTemp.ulNumKeyFrames];
 
-					pKeyFrame.fFrameNo = (float)tmp_vmd_face.ulFrameNo;
-					pKeyFrame.fRate    =        tmp_vmd_face.fFactor;
+					pKeyFrame.fFrameNo = (float)tmp_vmd_face[i].ulFrameNo;
+					pKeyFrame.fRate    =        tmp_vmd_face[i].fFactor;
 
 					pFaceTemp.ulNumKeyFrames++;
 					break;
@@ -205,26 +198,29 @@ public class MmdVmdMotion
 	private static MotionData[] createMotionDataList(DataReader i_reader,float[] o_max_frame) throws MmdException
 	{	
 		Vector<MotionData> result=new Vector<MotionData>();
+		// まずはモーションデータ中のボーンごとのキーフレーム数をカウント
 		final int ulNumBoneKeyFrames=i_reader.readInt();
 
-		// まずはモーションデータ中のボーンごとのキーフレーム数をカウント
-		
-		VMD_Motion tmp_vmd_motion = new VMD_Motion();
 
-		i_reader.mark();
+		//ボーンを指定数読み込み
+		VMD_Motion[] tmp_vmd_motion=new VMD_Motion[ulNumBoneKeyFrames];
+		for(int i=0;i<ulNumBoneKeyFrames;i++){
+			tmp_vmd_motion[i]= new VMD_Motion();
+			tmp_vmd_motion[i].read(i_reader);
+		}		
+		
 		float max_frame=0.0f;
 
 		for(int i = 0 ; i < ulNumBoneKeyFrames ; i++)
 		{
-			tmp_vmd_motion.read(i_reader);
-			if( max_frame < tmp_vmd_motion.ulFrameNo){
-				max_frame = tmp_vmd_motion.ulFrameNo;	// 最大フレーム更新
+			if( max_frame < tmp_vmd_motion[i].ulFrameNo){
+				max_frame = tmp_vmd_motion[i].ulFrameNo;	// 最大フレーム更新
 			}
 			boolean is_found=false;
 			for(int i2=0;i2<result.size();i2++)
 			{
 				final MotionData pMotTemp = result.get(i2);
-				if(pMotTemp.szBoneName.equals(tmp_vmd_motion.szBoneName))
+				if(pMotTemp.szBoneName.equals(tmp_vmd_motion[i].szBoneName))
 				{
 					// リストに追加済みのボーン
 					pMotTemp.ulNumKeyFrames++;
@@ -237,7 +233,7 @@ public class MmdVmdMotion
 			{
 				// リストにない場合は新規ノードを追加
 				MotionData pNew = new MotionData();
-				pNew.szBoneName=tmp_vmd_motion.szBoneName;
+				pNew.szBoneName=tmp_vmd_motion[i].szBoneName;
 				pNew.ulNumKeyFrames = 1;
 				result.add(pNew);
 			}
@@ -253,21 +249,18 @@ public class MmdVmdMotion
 		}
 		
 		// ボーンごとにキーフレームを格納
-		i_reader.reset();//マークした位置に戻る
 		for(int i = 0 ; i < ulNumBoneKeyFrames ; i++)
 		{
-
-			tmp_vmd_motion.read(i_reader);
 			for(int i2=0;i2<result.size();i2++)
 			{
 				final MotionData pMotTemp = result.get(i2);
-				if(pMotTemp.szBoneName.equals(tmp_vmd_motion.szBoneName))
+				if(pMotTemp.szBoneName.equals(tmp_vmd_motion[i].szBoneName))
 				{
 					final BoneKeyFrame pKeyFrame = pMotTemp.pKeyFrames[pMotTemp.ulNumKeyFrames];
 
-					pKeyFrame.fFrameNo     = (float)tmp_vmd_motion.ulFrameNo;
-					pKeyFrame.vec3Position.setValue(tmp_vmd_motion.vec3Position);
-					pKeyFrame.vec4Rotate.QuaternionNormalize(tmp_vmd_motion.vec4Rotate);
+					pKeyFrame.fFrameNo     = (float)tmp_vmd_motion[i].ulFrameNo;
+					pKeyFrame.vec3Position.setValue(tmp_vmd_motion[i].vec3Position);
+					pKeyFrame.vec4Rotate.QuaternionNormalize(tmp_vmd_motion[i].vec4Rotate);
 
 					pMotTemp.ulNumKeyFrames++;
 

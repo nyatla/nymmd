@@ -40,39 +40,9 @@ import jp.nyatla.nymmd.struct.pmd.*;
 import jp.nyatla.nymmd.types.*;
 
 
-class PmdSkinInfo
-{
-	public float fWeight;// ウェイト
-	public int[] unBoneNo=new int[2];	// ボーン番号
-	public static PmdSkinInfo[] createArray(int i_length)
-	{
-		PmdSkinInfo[] ret=new PmdSkinInfo[i_length];
-		for(int i=0;i<i_length;i++)
-		{
-			ret[i]=new PmdSkinInfo();
-		}
-		return ret;
-	}		
-}
 
-class MmdPmdMaterial
-{
-	public final Color4 col4Diffuse=new Color4();
-	public final Color4 col4Specular=new Color4();
-	public final Color4 col4Ambient=new Color4();
-	public float fShininess;
-	public int ulNumIndices;
-	public String texture_name;
-	public static MmdPmdMaterial[] createArray(int i_length)
-	{
-		MmdPmdMaterial[] ret=new MmdPmdMaterial[i_length];
-		for(int i=0;i<i_length;i++)
-		{
-			ret[i]=new MmdPmdMaterial();
-		}
-		return ret;
-	}	
-};
+
+
 
 class DataComparator implements java.util.Comparator<PmdIK>
 {
@@ -91,22 +61,16 @@ public class MmdPmdModel
 	private PmdBone[] m_pBoneArray; // ボーン配列
 	private PmdIK[] m_pIKArray;    // IK配列
 	
-	private short[] _indices;
+//	private short[] _indices;
 	private Vector3[] _position_array;	// 座標配列	
 	private Vector3[] _normal_array;		// 法線配列
 	private TexUV[] _texture_uv;		// テクスチャ座標配列
 	private PmdSkinInfo[] _skin_info_array;
-	private MmdPmdMaterial[] _materials;		// マテリアル配列
+	private PmdMaterial[] _materials;		// マテリアル配列
 
 	public MmdPmdModel(InputStream i_stream) throws MmdException
 	{
-		try{
-			if(!initialize(i_stream)){
-				throw new MmdException();
-			}
-		}catch(Exception e){
-			throw new MmdException(e);
-		}
+		initialize(i_stream);
 		return;
 	}
 	
@@ -114,14 +78,11 @@ public class MmdPmdModel
 	{
 		return this._number_of_vertex;
 	}
-	public MmdPmdMaterial[] getMaterials()
+	public PmdMaterial[] getMaterials()
 	{
 		return this._materials;
 	}
-	public short[] getIndices()
-	{
-		return this._indices;
-	}
+
 	public TexUV[] getUvArray()
 	{
 		return this._texture_uv;
@@ -177,7 +138,7 @@ public class MmdPmdModel
 
 
 
-	private boolean initialize(InputStream i_stream) throws IOException,MmdException
+	private void initialize(InputStream i_stream) throws MmdException
 	{
 		DataReader reader=new DataReader(i_stream);
 		
@@ -186,7 +147,7 @@ public class MmdPmdModel
 		PMD_Header pPMDHeader = new PMD_Header();
 		pPMDHeader.read(reader);
 		if(!pPMDHeader.szMagic.equalsIgnoreCase("PMD")){
-			return false;
+			throw new MmdException();
 		}		
 
 		this._name=pPMDHeader.szName;
@@ -202,7 +163,7 @@ public class MmdPmdModel
 		this._position_array=Vector3.createArray(this._number_of_vertex); 
 		this._normal_array=Vector3.createArray(this._number_of_vertex);
 		this._texture_uv=TexUV.createArray(this._number_of_vertex);
-		this._skin_info_array=PmdSkinInfo.createArray(this._number_of_vertex);
+		this._skin_info_array=new PmdSkinInfo[this._number_of_vertex];
 
 		PMD_Vertex tmp_pmd_vertex=new PMD_Vertex();
 		for(int i = 0 ; i < _number_of_vertex ; i++)
@@ -212,13 +173,14 @@ public class MmdPmdModel
 			_normal_array[i].setValue(tmp_pmd_vertex.vec3Normal);
 			_texture_uv[i].setValue(tmp_pmd_vertex.uvTex);
 
-			_skin_info_array[i].fWeight     = tmp_pmd_vertex.cbWeight / 100.0f; 
-			_skin_info_array[i].unBoneNo[0] = tmp_pmd_vertex.unBoneNo[0]; 
-			_skin_info_array[i].unBoneNo[1] = tmp_pmd_vertex.unBoneNo[1]; 
+			this._skin_info_array[i]=new PmdSkinInfo();
+			this._skin_info_array[i].fWeight     = tmp_pmd_vertex.cbWeight / 100.0f; 
+			this._skin_info_array[i].unBoneNo[0] = tmp_pmd_vertex.unBoneNo[0]; 
+			this._skin_info_array[i].unBoneNo[1] = tmp_pmd_vertex.unBoneNo[1]; 
 		}
 		// -----------------------------------------------------
 		// 頂点インデックス数取得
-		this._indices=createIndicesArray(reader);
+		short[] indices_array=createIndicesArray(reader);
 
 		
 		// -----------------------------------------------------
@@ -226,14 +188,23 @@ public class MmdPmdModel
 		int number_of_materials=reader.readInt();
 
 		// マテリアル配列をコピー
-		this._materials = MmdPmdMaterial.createArray(number_of_materials);
+		this._materials = new PmdMaterial[number_of_materials];
 
 		PMD_Material tmp_pmd_material=new PMD_Material();
 		
+		int indices_ptr=0;
 		for(int i = 0 ; i < number_of_materials; i++ )
 		{
 			tmp_pmd_material.read(reader);
-			_materials[i].col4Diffuse.setValue(tmp_pmd_material.col4Diffuse);
+			this._materials[i]=new PmdMaterial();
+			final int num_of_indices=tmp_pmd_material.ulNumIndices;
+
+			this._materials[i].indices=new short[num_of_indices];
+			System.arraycopy(indices_array,indices_ptr, this._materials[i].indices,0,num_of_indices);
+			indices_ptr+=num_of_indices;
+			
+
+			this._materials[i].col4Diffuse.setValue(tmp_pmd_material.col4Diffuse);
 
 			this._materials[i].col4Specular.r = tmp_pmd_material.col3Specular.r;
 			this._materials[i].col4Specular.g = tmp_pmd_material.col3Specular.g;
@@ -246,7 +217,6 @@ public class MmdPmdModel
 			this._materials[i].col4Ambient.a = 1.0f;
 
 			this._materials[i].fShininess = tmp_pmd_material.fShininess;
-			this._materials[i].ulNumIndices = tmp_pmd_material.ulNumIndices;
 
 			this._materials[i].texture_name = tmp_pmd_material.szTextureFileName;
 			if(this._materials[i].texture_name.length()<1){
@@ -260,7 +230,7 @@ public class MmdPmdModel
 		this.m_pIKArray=createIKArray(reader,this.m_pBoneArray);
 		//Face配列の読み出し
 		this.m_pFaceArray=createFaceArray(reader);
-		return true;		
+		return;		
 	}
 	private static short[] createIndicesArray(DataReader i_reader) throws MmdException
 	{

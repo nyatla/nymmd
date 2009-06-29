@@ -42,6 +42,7 @@ public class DataReader
 	public DataReader(InputStream i_stream) throws MmdException
 	{
 		try{
+			//コレなんとかしよう。C#のBinaryReaderみたいに振舞うように。
 			int file_len=i_stream.available();
 			if(file_len<1){
 				file_len=2*1024*1024;
@@ -84,14 +85,6 @@ public class DataReader
 	public double readDouble()
 	{
 		return this._buf.getDouble();
-	}
-	public void mark()
-	{
-		this._buf.mark();
-	}
-	public void reset()
-	{
-		this._buf.reset();
 	}
 	public String readAscii(int i_length) throws MmdException
 	{

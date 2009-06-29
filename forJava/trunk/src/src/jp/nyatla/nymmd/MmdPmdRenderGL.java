@@ -42,9 +42,7 @@ import java.nio.ShortBuffer;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
-import jp.nyatla.nymmd.types.Matrix;
-import jp.nyatla.nymmd.types.TexUV;
-import jp.nyatla.nymmd.types.Vector3;
+import jp.nyatla.nymmd.types.*;
 
 import java.util.*;
 
@@ -82,7 +80,6 @@ class GLTextureList
 		IntBuffer texid = IntBuffer.allocate(1);
 		BufferedImage img;
 		try {
-			// int texid[]=new int[1];
 			img = ImageIO.read(i_st);
 		} catch (Exception e) {
 			throw new MmdException();
@@ -138,6 +135,7 @@ class GLMaterial
 {
 	public final float[] color = new float[12];// Diffuse,Specular,Ambientの順
 	public float fShininess;
+	public ShortBuffer indices_size;
 	public int ulNumIndices;
 	public GLTextureData texture;
 }
@@ -183,7 +181,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 		this._normal_array = Vector3.createArray(number_of_vertex);
 
 		//Material配列の作成
-		MmdPmdMaterial[] m = i_pmd.getMaterials();// this._ref_materials;
+		PmdMaterial[] m = i_pmd.getMaterials();// this._ref_materials;
 		Vector<GLMaterial> gl_materials = new Vector<GLMaterial>();
 		for (int i = 0; i < m.length; i++) {
 			final GLMaterial new_material = new GLMaterial();
@@ -197,7 +195,8 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 			} else {
 				new_material.texture = null;
 			}
-			new_material.ulNumIndices = m[i].ulNumIndices;
+			new_material.indices_size=ShortBuffer.wrap(m[i].indices);
+			new_material.ulNumIndices = m[i].indices.length;
 			gl_materials.add(new_material);
 		}
 		this._gl_materials = gl_materials.toArray(new GLMaterial[gl_materials.size()]);
@@ -247,7 +246,6 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 	public void render()
 	{
 		final TexUV[] texture_uv = this._ref_pmd.getUvArray();
-		final short[] indices_array = this._ref_pmd.getIndices();
 		final int number_of_vertex = this._ref_pmd.getNumberOfVertex();
 		
 		final GL gl = this._gl;
@@ -305,9 +303,8 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 				// テクスチャなし
 				gl.glDisable(GL.GL_TEXTURE_2D);
 			}
-			ShortBuffer index = ShortBuffer.wrap(indices_array, vertex_index, this._gl_materials[i].ulNumIndices);
 			// 頂点インデックスを指定してポリゴン描画
-			gl.glDrawElements(GL.GL_TRIANGLES, this._gl_materials[i].ulNumIndices, GL.GL_UNSIGNED_SHORT, index);
+			gl.glDrawElements(GL.GL_TRIANGLES, this._gl_materials[i].ulNumIndices, GL.GL_UNSIGNED_SHORT, this._gl_materials[i].indices_size);
 			vertex_index += this._gl_materials[i].ulNumIndices;
 		}
 

@@ -163,22 +163,22 @@ public class Vector3
 				double	yz2 = pvec4Quat.y * z2;
 				double	wx2 = pvec4Quat.w * x2;
 				double	yy2 = pvec4Quat.y * y2;
-				this.x = (float)Math.atan2(yz2 + wx2, (1.f - (xx2 + yy2)) );
+				this.x = (float)Math.atan2(yz2 + wx2, (1.0f - (xx2 + yy2)) );
 				this.y = (float)yRadian;
-				this.z = (float)Math.atan2( (xy2 + wz2), (1.f - (yy2 + zz2)) );
+				this.z = (float)Math.atan2( (xy2 + wz2), (1.0f - (yy2 + zz2)) );
 			}
 			else
 			{
-				this.x = (float)-Math.atan2( (xy2 - wz2), (1.f - (xx2 + zz2)) );
+				this.x = (float)-Math.atan2( (xy2 - wz2), (1.0f - (xx2 + zz2)) );
 				this.y = (float)yRadian;
 				this.z = 0.f;
 			}
 		}
 		else
 		{
-			this.x = (float)Math.atan2( (xy2 - wz2), (1.f - (xx2 + zz2)) );
+			this.x = (float)Math.atan2( (xy2 - wz2), (1.0f - (xx2 + zz2)) );
 			this.y = (float)yRadian;
-			this.z = 0.f;
+			this.z = 0.0f;
 		}
 	}	
 	
