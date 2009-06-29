@@ -62,9 +62,9 @@ public class MmdPmdModel
 	private PmdIK[] m_pIKArray;    // IK配列
 	
 //	private short[] _indices;
-	private Vector3[] _position_array;	// 座標配列	
-	private Vector3[] _normal_array;		// 法線配列
-	private TexUV[] _texture_uv;		// テクスチャ座標配列
+	private MmdVector3[] _position_array;	// 座標配列	
+	private MmdVector3[] _normal_array;		// 法線配列
+	private MmdTexUV[] _texture_uv;		// テクスチャ座標配列
 	private PmdSkinInfo[] _skin_info_array;
 	private PmdMaterial[] _materials;		// マテリアル配列
 
@@ -83,15 +83,15 @@ public class MmdPmdModel
 		return this._materials;
 	}
 
-	public TexUV[] getUvArray()
+	public MmdTexUV[] getUvArray()
 	{
 		return this._texture_uv;
 	}
-	public Vector3[] getPositionArray()
+	public MmdVector3[] getPositionArray()
 	{
 		return this._position_array;
 	}
-	public Vector3[] getNormatArray()
+	public MmdVector3[] getNormatArray()
 	{
 		return this._normal_array;
 	}
@@ -160,9 +160,9 @@ public class MmdPmdModel
 		}
 		
 		// 頂点配列をコピー
-		this._position_array=Vector3.createArray(this._number_of_vertex); 
-		this._normal_array=Vector3.createArray(this._number_of_vertex);
-		this._texture_uv=TexUV.createArray(this._number_of_vertex);
+		this._position_array=MmdVector3.createArray(this._number_of_vertex); 
+		this._normal_array=MmdVector3.createArray(this._number_of_vertex);
+		this._texture_uv=MmdTexUV.createArray(this._number_of_vertex);
 		this._skin_info_array=new PmdSkinInfo[this._number_of_vertex];
 
 		PMD_Vertex tmp_pmd_vertex=new PMD_Vertex();

@@ -31,16 +31,16 @@
  */
 package jp.nyatla.nymmd.types;
 
-public class Matrix
+public class MmdMatrix
 {
 	//NyARToolkitと統合かな。
 	public final double[][] m=new double[4][4];
-	public static Matrix[] createArray(int i_length)
+	public static MmdMatrix[] createArray(int i_length)
 	{
-		Matrix[] ret=new Matrix[i_length];
+		MmdMatrix[] ret=new MmdMatrix[i_length];
 		for(int i=0;i<i_length;i++)
 		{
-			ret[i]=new Matrix();
+			ret[i]=new MmdMatrix();
 		}
 		return ret;
 	}
@@ -51,7 +51,7 @@ public class Matrix
 		return;
 	}
 	private final double[][] _array_temp=new double[4][4];
-	public void MatrixMultiply(Matrix matSrc1,Matrix matSrc2 )
+	public void MatrixMultiply(MmdMatrix matSrc1,MmdMatrix matSrc2 )
 	{
 		final double[][] matTemp=this._array_temp;
 		int		i;
@@ -73,7 +73,7 @@ public class Matrix
 		}
 	}
 
-	public void MatrixInverse(Matrix matSrc)
+	public void MatrixInverse(MmdMatrix matSrc)
 	{
 		final double[][] matTemp=this._array_temp;
 		for(int i=0;i<4;i++){
@@ -108,7 +108,7 @@ public class Matrix
 		return;
 	}
 
-	public void MatrixLerp(Matrix matSrc1, Matrix matSrc2, float fLerpValue )
+	public void MatrixLerp(MmdMatrix matSrc1, MmdMatrix matSrc2, float fLerpValue )
 	{
 		double[][] sm1=matSrc1.m;
 		double[][] sm2=matSrc2.m;
@@ -122,7 +122,7 @@ public class Matrix
 		}
 		return;
 	}
-	public void QuaternionToMatrix(Vector4 pvec4Quat)
+	public void QuaternionToMatrix(MmdVector4 pvec4Quat)
 	{
 		double	x2 = pvec4Quat.x * pvec4Quat.x * 2.0f;
 		double	y2 = pvec4Quat.y * pvec4Quat.y * 2.0f;

@@ -36,14 +36,14 @@ import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.struct.DataReader;
 import jp.nyatla.nymmd.struct.StructReader;
 import jp.nyatla.nymmd.struct.StructType;
-import jp.nyatla.nymmd.types.TexUV;
-import jp.nyatla.nymmd.types.Vector3;
+import jp.nyatla.nymmd.types.MmdTexUV;
+import jp.nyatla.nymmd.types.MmdVector3;
 
 public class PMD_Vertex implements StructType
 {
-	public Vector3 vec3Pos=new Vector3();	// 座標
-	public Vector3 vec3Normal=new Vector3();	// 法線ベクトル
-	public TexUV uvTex=new TexUV();		// テクスチャ座標
+	public MmdVector3 vec3Pos=new MmdVector3();	// 座標
+	public MmdVector3 vec3Normal=new MmdVector3();	// 法線ベクトル
+	public MmdTexUV uvTex=new MmdTexUV();		// テクスチャ座標
 
 	public int[] unBoneNo=new int[2];	// ボーン番号
 	public int	cbWeight;		// ブレンドの重み (0～100％)

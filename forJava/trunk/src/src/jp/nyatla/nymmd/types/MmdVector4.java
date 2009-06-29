@@ -32,10 +32,10 @@
 package jp.nyatla.nymmd.types;
 
 
-public class Vector4
+public class MmdVector4
 {
 	public double x, y, z, w;		
-	public void setValue(Vector4 v)
+	public void setValue(MmdVector4 v)
 	{
 		this.x=v.x;
 		this.y=v.y;
@@ -43,7 +43,7 @@ public class Vector4
 		this.w=v.w;
 		return;
 	}	
-	public void QuaternionSlerp(Vector4 pvec4Src1,Vector4 pvec4Src2, double fLerpValue )
+	public void QuaternionSlerp(MmdVector4 pvec4Src1,MmdVector4 pvec4Src2, double fLerpValue )
 	{
 
 		// Qlerp
@@ -67,7 +67,7 @@ public class Vector4
 		QuaternionNormalize(this);
 		return;
 	}
-	public void QuaternionNormalize(Vector4 pvec4Src)
+	public void QuaternionNormalize(MmdVector4 pvec4Src)
 	{
 		final double fSqr =1.0 / Math.sqrt(( pvec4Src.x * pvec4Src.x + pvec4Src.y * pvec4Src.y + pvec4Src.z * pvec4Src.z + pvec4Src.w * pvec4Src.w));
 
@@ -76,7 +76,7 @@ public class Vector4
 		this.z =(pvec4Src.z * fSqr);
 		this.w =(pvec4Src.w * fSqr);
 	}
-	public void QuaternionCreateAxis(Vector3 pvec3Axis, double fRotAngle )
+	public void QuaternionCreateAxis(MmdVector3 pvec3Axis, double fRotAngle )
 	{
 		if( Math.abs( fRotAngle ) < 0.0001f )
 		{
@@ -95,7 +95,7 @@ public class Vector4
 		}
 		return;
 	}
-	public void QuaternionMultiply(Vector4 pvec4Src1,Vector4 pvec4Src2)
+	public void QuaternionMultiply(MmdVector4 pvec4Src1,MmdVector4 pvec4Src2)
 	{
 		double	px, py, pz, pw;
 		double	qx, qy, qz, qw;
@@ -108,7 +108,7 @@ public class Vector4
 		this.z = pw * qz + px * qy - py * qx + pz * qw;
 		this.w = pw * qw - px * qx - py * qy - pz * qz;
 	}
-	public void QuaternionCreateEuler(Vector3 pvec3EulerAngle )
+	public void QuaternionCreateEuler(MmdVector3 pvec3EulerAngle )
 	{
 		final double	xRadian = pvec3EulerAngle.x * 0.5;
 		final double	yRadian = pvec3EulerAngle.y * 0.5;

@@ -45,8 +45,8 @@ public class PmdIK
 
 	private PmdBone[] m_ppBoneList;	// IKを構成するボーンの配列
 	
-	private final Vector3[] _work_vector3=Vector3.createArray(4);
-	private final Vector4 _work_vector4=new Vector4();
+	private final MmdVector3[] _work_vector3=MmdVector3.createArray(4);
+	private final MmdVector4 _work_vector4=new MmdVector4();
 	public PmdIK(PMD_IK pPMDIKData, PmdBone[] i_ref_bone_array)
 	{
 		// IKターゲットボーン
@@ -72,9 +72,9 @@ public class PmdIK
 			}
 		}			
 	}	
-	private void limitAngle( Vector4 pvec4Out,Vector4 pvec4Src )
+	private void limitAngle( MmdVector4 pvec4Out,MmdVector4 pvec4Src )
 	{
-		final Vector3 vec3Angle=this._work_vector3[0];
+		final MmdVector3 vec3Angle=this._work_vector3[0];
 
 		// XYZ軸回転の取得
 		vec3Angle.QuaternionToEuler(pvec4Src);
@@ -98,22 +98,22 @@ public class PmdIK
 	{
 		return this.m_nSortVal;
 	}
-	private final Vector3 __update_vec3OrgTargetPos=new Vector3();
-	private final Matrix __update_matInvBone=new Matrix();
+	private final MmdVector3 __update_vec3OrgTargetPos=new MmdVector3();
+	private final MmdMatrix __update_matInvBone=new MmdMatrix();
 	public void update()
 	{
-		final Vector3 vec3OrgTargetPos=this.__update_vec3OrgTargetPos;
-		final Matrix matInvBone=this.__update_matInvBone;
+		final MmdVector3 vec3OrgTargetPos=this.__update_vec3OrgTargetPos;
+		final MmdMatrix matInvBone=this.__update_matInvBone;
 
 		vec3OrgTargetPos.x = (float)m_pTargetBone.m_matLocal.m[3][0];
 		vec3OrgTargetPos.y = (float)m_pTargetBone.m_matLocal.m[3][1];
 		vec3OrgTargetPos.z = (float)m_pTargetBone.m_matLocal.m[3][2];
 
-		final Vector3 vec3EffPos=this._work_vector3[0];
-		final Vector3 vec3TargetPos=this._work_vector3[1];
-		final Vector3 vec3Diff=this._work_vector3[2];
-		final Vector3 vec3RotAxis=this._work_vector3[3];
-		final Vector4 vec4RotQuat=this._work_vector4;
+		final MmdVector3 vec3EffPos=this._work_vector3[0];
+		final MmdVector3 vec3TargetPos=this._work_vector3[1];
+		final MmdVector3 vec3Diff=this._work_vector3[2];
+		final MmdVector3 vec3RotAxis=this._work_vector3[3];
+		final MmdVector4 vec4RotQuat=this._work_vector4;
 		
 		for(int i =this.m_ppBoneList.length - 1 ; i >= 0 ; i-- ){
 			this.m_ppBoneList[i].updateMatrix();

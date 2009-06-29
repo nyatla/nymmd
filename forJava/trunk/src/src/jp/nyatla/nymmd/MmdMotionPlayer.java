@@ -47,12 +47,12 @@ public class MmdMotionPlayer
 
 	private float m_fOldFrame,m_fFrame;
 	private boolean m_bLoop;		// モーションをループするかどうか
-	private Matrix[] _skinning_mat;
+	private MmdMatrix[] _skinning_mat;
 
 	private PmdBone m_pNeckBone;		// 首のボーン
 
 
-	private void getMotionPosRot(MotionData pMotionData, float fFrame, Vector3 pvec3Pos, Vector4 pvec4Rot)
+	private void getMotionPosRot(MotionData pMotionData, float fFrame, MmdVector3 pvec3Pos, MmdVector4 pvec4Rot)
 	{
 		int	i;
 		int	ulNumKeyFrame = pMotionData.ulNumKeyFrames;
@@ -159,7 +159,7 @@ public class MmdMotionPlayer
 		PmdBone[] bone_array=i_pmd_model.getBoneArray();
 
 		//スキニング用のmatrix
-		this._skinning_mat=Matrix.createArray(bone_array.length);
+		this._skinning_mat=MmdMatrix.createArray(bone_array.length);
 		
 		
 		//---------------------------------------------------------
@@ -201,8 +201,8 @@ public class MmdMotionPlayer
 		//---------------------------------------------------------
 		// 指定フレームのデータでボーンを動かす
 		final PmdBone[] ppBone = this.m_ppBoneList;
-		Vector3 vec3Position=new Vector3();
-		Vector4 vec4Rotate=new Vector4();
+		MmdVector3 vec3Position=new MmdVector3();
+		MmdVector4 vec4Rotate=new MmdVector4();
 
 		MotionData[] pMotionDataList = _ref_vmd_motion.refMotionDataArray();
 		for(int i=0;i<pMotionDataList.length;i++)
@@ -223,7 +223,7 @@ public class MmdMotionPlayer
 
 		//---------------------------------------------------------
 		// 指定フレームのデータで表情を変形する
-		Vector3[] position_array=this._ref_pmd_model.getPositionArray();
+		MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();
 		
 		PmdFace[] ppFace = this.m_ppFaceList;
 		FaceData[] pFaceDataList = _ref_vmd_motion.refFaceDataArray();
@@ -274,7 +274,7 @@ public class MmdMotionPlayer
 
 	public void updateMotion( float fElapsedFrame ) throws MmdException
 	{
-		final Vector3[] position_array=this._ref_pmd_model.getPositionArray();
+		final MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();
 		final PmdIK[] ik_array=this._ref_pmd_model.getIKArray();
 		final PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
 		final PmdFace[] face_array=this._ref_pmd_model.getFaceArray();
@@ -303,10 +303,10 @@ public class MmdMotionPlayer
 	 * look me
 	 * @param pvec3LookTarget
 	 */
-	private Vector3 __updateNeckBone_looktarget=new Vector3();
+	private MmdVector3 __updateNeckBone_looktarget=new MmdVector3();
 	public void updateNeckBone(float i_x,float i_y,float i_z)
 	{
-		final Vector3 looktarget=this.__updateNeckBone_looktarget;
+		final MmdVector3 looktarget=this.__updateNeckBone_looktarget;
 		looktarget.x=i_x;
 		looktarget.y=i_y;
 		looktarget.z=i_z;
@@ -332,7 +332,7 @@ public class MmdMotionPlayer
 	}	
 	
 	//現在のスキニングマトリクスを返す。
-	public Matrix[] refSkinningMatrix()
+	public MmdMatrix[] refSkinningMatrix()
 	{
 		PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
 		// スキニング用行列の更新

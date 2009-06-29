@@ -34,15 +34,15 @@ package jp.nyatla.nymmd.struct.vmd;
 
 import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.struct.*;
-import jp.nyatla.nymmd.types.Vector3;
-import jp.nyatla.nymmd.types.Vector4;
+import jp.nyatla.nymmd.types.MmdVector3;
+import jp.nyatla.nymmd.types.MmdVector4;
 public class VMD_Motion implements StructType
 {
 	public String szBoneName;	// ボーン名
 	public long ulFrameNo;		// フレーム番号
 
-	public final Vector3 vec3Position=new Vector3();// 位置
-	public final Vector4 vec4Rotate=new Vector4();  // 回転(クォータニオン)
+	public final MmdVector3 vec3Position=new MmdVector3();// 位置
+	public final MmdVector4 vec4Rotate=new MmdVector4();  // 回転(クォータニオン)
 
 	public final int[] cInterpolation1=new int[16];	// 補間情報
 	public final int[] cInterpolation2=new int[16];

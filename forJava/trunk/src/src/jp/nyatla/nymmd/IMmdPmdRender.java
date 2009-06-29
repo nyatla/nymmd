@@ -32,12 +32,12 @@
 package jp.nyatla.nymmd;
 
 
-import jp.nyatla.nymmd.types.Matrix;
+import jp.nyatla.nymmd.types.MmdMatrix;
 
 public interface IMmdPmdRender
 {
 	public void dispose();
 	public void setPmd(MmdPmdModel i_pmd, IMmdDataIo i_io) throws MmdException;
-	public void updateSkinning(Matrix[] i_skinning_mat);
+	public void updateSkinning(MmdMatrix[] i_skinning_mat);
 	public void render();
 }

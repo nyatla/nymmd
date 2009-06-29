@@ -32,22 +32,16 @@
 package jp.nyatla.nymmd.types;
 
 
-public class TexUV
+
+public class MmdColor3
 {
-	public float u, v;
-	public static TexUV[] createArray(int i_length)
+	public float r, g, b;
+	
+	public void setValue(MmdColor4 v)
 	{
-		TexUV[] ret=new TexUV[i_length];
-		for(int i=0;i<i_length;i++)
-		{
-			ret[i]=new TexUV();
-		}
-		return ret;
-	}
-	public void setValue(TexUV v)
-	{
-		this.u=v.u;
-		this.v=v.v;
+		this.r=v.r;
+		this.g=v.g;
+		this.b=v.b;
 		return;
 	}	
 }

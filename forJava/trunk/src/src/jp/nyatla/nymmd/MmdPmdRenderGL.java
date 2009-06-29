@@ -146,8 +146,8 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 
 	private GLMaterial[] _gl_materials;
 	//レンダリング時の計算用
-	private Vector3[] _position_array;
-	private Vector3[] _normal_array;
+	private MmdVector3[] _position_array;
+	private MmdVector3[] _normal_array;
 
 	private GL _gl;
 
@@ -177,8 +177,8 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 		this._ref_pmd=i_pmd;
 		//内部用
 		final int number_of_vertex=i_pmd.getNumberOfVertex();
-		this._position_array = Vector3.createArray(number_of_vertex);
-		this._normal_array = Vector3.createArray(number_of_vertex);
+		this._position_array = MmdVector3.createArray(number_of_vertex);
+		this._normal_array = MmdVector3.createArray(number_of_vertex);
 
 		//Material配列の作成
 		PmdMaterial[] m = i_pmd.getMaterials();// this._ref_materials;
@@ -204,7 +204,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 		return;
 	}
 
-	private final Matrix __tmp_matrix = new Matrix();
+	private final MmdMatrix __tmp_matrix = new MmdMatrix();
 	/**
 	 * i_skinning_matでPMDを更新した頂点データを取得する。
 	 * @param i_skinning_mat
@@ -212,27 +212,27 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 	 * @param i_normal_array
 	 * @param i_skin_info
 	 */
-	public void updateSkinning(Matrix[] i_skinning_mat)
+	public void updateSkinning(MmdMatrix[] i_skinning_mat)
 	{
 		int number_of_vertex = this._ref_pmd.getNumberOfVertex();
-		Vector3[] org_pos_array=this._ref_pmd.getPositionArray();
-		Vector3[] org_normal_array=this._ref_pmd.getNormatArray();
+		MmdVector3[] org_pos_array=this._ref_pmd.getPositionArray();
+		MmdVector3[] org_normal_array=this._ref_pmd.getNormatArray();
 		PmdSkinInfo[] org_skin_info=this._ref_pmd.getSkinInfoArray();
 
 		// 頂点スキニング
-		final Matrix matTemp = this.__tmp_matrix;
+		final MmdMatrix matTemp = this.__tmp_matrix;
 		for (int i = 0; i < number_of_vertex; i++) {
 			if (org_skin_info[i].fWeight == 0.0f) {
-				final Matrix mat = i_skinning_mat[org_skin_info[i].unBoneNo[1]];
+				final MmdMatrix mat = i_skinning_mat[org_skin_info[i].unBoneNo[1]];
 				this._position_array[i].Vector3Transform(org_pos_array[i], mat);
 				this._normal_array[i].Vector3Rotate(org_normal_array[i], mat);
 			} else if (org_skin_info[i].fWeight >= 0.9999f) {
-				final Matrix mat = i_skinning_mat[org_skin_info[i].unBoneNo[0]];
+				final MmdMatrix mat = i_skinning_mat[org_skin_info[i].unBoneNo[0]];
 				this._position_array[i].Vector3Transform(org_pos_array[i], mat);
 				this._normal_array[i].Vector3Rotate(org_normal_array[i], mat);
 			} else {
-				final Matrix mat0 = i_skinning_mat[org_skin_info[i].unBoneNo[0]];
-				final Matrix mat1 = i_skinning_mat[org_skin_info[i].unBoneNo[1]];
+				final MmdMatrix mat0 = i_skinning_mat[org_skin_info[i].unBoneNo[0]];
+				final MmdMatrix mat1 = i_skinning_mat[org_skin_info[i].unBoneNo[1]];
 
 				matTemp.MatrixLerp(mat0, mat1, org_skin_info[i].fWeight);
 
@@ -245,7 +245,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 
 	public void render()
 	{
-		final TexUV[] texture_uv = this._ref_pmd.getUvArray();
+		final MmdTexUV[] texture_uv = this._ref_pmd.getUvArray();
 		final int number_of_vertex = this._ref_pmd.getNumberOfVertex();
 		
 		final GL gl = this._gl;

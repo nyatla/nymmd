@@ -33,46 +33,46 @@ package jp.nyatla.nymmd.types;
 
 
 
-public class Vector3
+public class MmdVector3
 {
 	public float x, y, z;
-	public static Vector3[] createArray(int i_length)
+	public static MmdVector3[] createArray(int i_length)
 	{
-		Vector3[] ret=new Vector3[i_length];
+		MmdVector3[] ret=new MmdVector3[i_length];
 		for(int i=0;i<i_length;i++)
 		{
-			ret[i]=new Vector3();
+			ret[i]=new MmdVector3();
 		}
 		return ret;
 	}	
-	public void setValue(Vector3 v)
+	public void setValue(MmdVector3 v)
 	{
 		this.x=v.x;
 		this.y=v.y;
 		this.z=v.z;
 		return;
 	}
-	public void Vector3Add(Vector3 pvec3Add1,Vector3 pvec3Add2)
+	public void Vector3Add(MmdVector3 pvec3Add1,MmdVector3 pvec3Add2)
 	{
 		this.x = pvec3Add1.x + pvec3Add2.x;
 		this.y = pvec3Add1.y + pvec3Add2.y;
 		this.z = pvec3Add1.z + pvec3Add2.z;
 		return;
 	}
-	public void Vector3Sub(Vector3 pvec3Sub1,Vector3 pvec3Sub2)
+	public void Vector3Sub(MmdVector3 pvec3Sub1,MmdVector3 pvec3Sub2)
 	{
 		this.x = pvec3Sub1.x - pvec3Sub2.x;
 		this.y = pvec3Sub1.y - pvec3Sub2.y;
 		this.z = pvec3Sub1.z - pvec3Sub2.z;
 		return;
 	}
-	public void Vector3MulAdd(Vector3 pvec3Add1,Vector3 pvec3Add2, float fRate )
+	public void Vector3MulAdd(MmdVector3 pvec3Add1,MmdVector3 pvec3Add2, float fRate )
 	{
 		this.x = pvec3Add1.x + pvec3Add2.x * fRate;
 		this.y = pvec3Add1.y + pvec3Add2.y * fRate;
 		this.z = pvec3Add1.z + pvec3Add2.z * fRate;
 	}
-	public void Vector3Normalize(Vector3 pvec3Src)
+	public void Vector3Normalize(MmdVector3 pvec3Src)
 	{
 		double fSqr =(1.0f / Math.sqrt( pvec3Src.x * pvec3Src.x + pvec3Src.y * pvec3Src.y + pvec3Src.z * pvec3Src.z ));
 		this.x =(float)(pvec3Src.x * fSqr);
@@ -82,12 +82,12 @@ public class Vector3
 	}
 
 
-	public double Vector3DotProduct(Vector3 pvec3Src2)
+	public double Vector3DotProduct(MmdVector3 pvec3Src2)
 	{
 		return (this.x * pvec3Src2.x + this.y * pvec3Src2.y + this.z * pvec3Src2.z);
 	}
 
-	public void Vector3CrossProduct(Vector3 pvec3Src1, Vector3 pvec3Src2 )
+	public void Vector3CrossProduct(MmdVector3 pvec3Src1, MmdVector3 pvec3Src2 )
 	{
 		final float vx1=pvec3Src1.x;
 		final float vy1=pvec3Src1.y;
@@ -99,7 +99,7 @@ public class Vector3
 		this.y = vz1 * vx2 - vx1 * vz2;
 		this.z = vx1 * vy2 - vy1 * vx2;
 	}
-	public void Vector3Lerp(Vector3 pvec3Src1,Vector3 pvec3Src2, float fLerpValue )
+	public void Vector3Lerp(MmdVector3 pvec3Src1,MmdVector3 pvec3Src2, float fLerpValue )
 	{
 		float	t0 = 1.0f - fLerpValue;
 
@@ -109,7 +109,7 @@ public class Vector3
 		return;
 	}
 
-	public void Vector3Transform(Vector3 pVec3In,Matrix matTransform)
+	public void Vector3Transform(MmdVector3 pVec3In,MmdMatrix matTransform)
 	{
 		final double vx=pVec3In.x;
 		final double vy=pVec3In.y;
@@ -120,7 +120,7 @@ public class Vector3
 		return;
 	}
 
-	public void Vector3Rotate(Vector3 pVec3In,Matrix matRotate)
+	public void Vector3Rotate(MmdVector3 pVec3In,MmdMatrix matRotate)
 	{
 		final double vx=pVec3In.x;
 		final double vy=pVec3In.y;
@@ -130,7 +130,7 @@ public class Vector3
 		this.z =(float)(vx * matRotate.m[0][2] + vy * matRotate.m[1][2] + vz * matRotate.m[2][2]);
 		return;
 	}
-	public void QuaternionToEuler(Vector4 pvec4Quat )
+	public void QuaternionToEuler(MmdVector4 pvec4Quat )
 	{
 		// XYZ軸回転の取得
 		// Y回転を求める

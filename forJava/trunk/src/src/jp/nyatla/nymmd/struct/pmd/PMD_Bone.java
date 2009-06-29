@@ -35,7 +35,7 @@ package jp.nyatla.nymmd.struct.pmd;
 
 import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.struct.*;
-import jp.nyatla.nymmd.types.Vector3;
+import jp.nyatla.nymmd.types.MmdVector3;
 
 public class PMD_Bone implements StructType
 {	
@@ -44,7 +44,7 @@ public class PMD_Bone implements StructType
 	public int	nChildNo;			// 子ボーン番号
 	public int	cbKind;		// ボーンの種類
 	public int	unIKTarget;	// IK時のターゲットボーン
-	public Vector3	vec3Position=new Vector3();	// モデル原点からの位置
+	public MmdVector3	vec3Position=new MmdVector3();	// モデル原点からの位置
 	
 	public void read(DataReader i_reader) throws MmdException
 	{

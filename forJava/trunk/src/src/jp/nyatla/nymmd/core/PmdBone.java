@@ -38,20 +38,20 @@ import jp.nyatla.nymmd.types.*;
 public class PmdBone
 {
 	private String _name;
-	private final Vector3 _pmd_bone_position=new Vector3();
-	private final Vector3 m_vec3Offset=new Vector3();
-	private final Matrix m_matInvTransform=new Matrix();	// 初期値のボーンを原点に移動させるような行列
+	private final MmdVector3 _pmd_bone_position=new MmdVector3();
+	private final MmdVector3 m_vec3Offset=new MmdVector3();
+	private final MmdMatrix m_matInvTransform=new MmdMatrix();	// 初期値のボーンを原点に移動させるような行列
 
 	private PmdBone	_parent_bone;
 	private PmdBone	m_pChildBone;
 
 	// 以下は現在の値
-	public final Matrix m_matLocal=new Matrix();
+	public final MmdMatrix m_matLocal=new MmdMatrix();
 
 
 	//強制public
-	public final Vector3 m_vec3Position=new Vector3();
-	public final Vector4 m_vec4Rotate=new Vector4();
+	public final MmdVector3 m_vec3Position=new MmdVector3();
+	public final MmdVector4 m_vec4Rotate=new MmdVector4();
 	public boolean m_bIKLimitAngle;	// IK時に角度制限をするかどうか
 	//強制public/
 	
@@ -120,7 +120,7 @@ public class PmdBone
 	}
 
 	
-	public void updateSkinningMat(Matrix o_matrix)
+	public void updateSkinningMat(MmdMatrix o_matrix)
 	{
 		o_matrix.MatrixMultiply(this.m_matInvTransform,this.m_matLocal);		
 		return;
@@ -139,21 +139,21 @@ public class PmdBone
 		}
 		return;
 	}
-	private final Matrix _lookAt_matTemp=new Matrix();
-	private final Matrix _lookAt_matInvTemp=new Matrix();
-	private final Vector3 _lookAt_vec3LocalTgtPosZY=new Vector3();
-	private final Vector3 _lookAt_vec3LocalTgtPosXZ=new Vector3();
-	private final Vector3 _lookAt_vec3Angle=new Vector3();
+	private final MmdMatrix _lookAt_matTemp=new MmdMatrix();
+	private final MmdMatrix _lookAt_matInvTemp=new MmdMatrix();
+	private final MmdVector3 _lookAt_vec3LocalTgtPosZY=new MmdVector3();
+	private final MmdVector3 _lookAt_vec3LocalTgtPosXZ=new MmdVector3();
+	private final MmdVector3 _lookAt_vec3Angle=new MmdVector3();
 	
 	
 	
-	public 	void lookAt(Vector3 pvecTargetPos )
+	public 	void lookAt(MmdVector3 pvecTargetPos )
 	{
 		// どうもおかしいので要調整
-		final Matrix matTemp=this._lookAt_matTemp;
-		final Matrix matInvTemp=this._lookAt_matInvTemp;
-		final Vector3		vec3LocalTgtPosZY=this._lookAt_vec3LocalTgtPosZY;
-		final Vector3		vec3LocalTgtPosXZ=this._lookAt_vec3LocalTgtPosXZ;
+		final MmdMatrix matTemp=this._lookAt_matTemp;
+		final MmdMatrix matInvTemp=this._lookAt_matInvTemp;
+		final MmdVector3		vec3LocalTgtPosZY=this._lookAt_vec3LocalTgtPosZY;
+		final MmdVector3		vec3LocalTgtPosXZ=this._lookAt_vec3LocalTgtPosXZ;
 
 		matTemp.MatrixIdentity();
 		matTemp.m[3][0] = m_vec3Position.x + m_vec3Offset.x; 
@@ -177,7 +177,7 @@ public class PmdBone
 		vec3LocalTgtPosZY.x = 0.0f;
 		vec3LocalTgtPosZY.Vector3Normalize(vec3LocalTgtPosZY);
 
-		Vector3 vec3Angle = this._lookAt_vec3Angle;
+		MmdVector3 vec3Angle = this._lookAt_vec3Angle;
 		vec3Angle.x=vec3Angle.y=vec3Angle.z=0;
 
 		if( vec3LocalTgtPosZY.z > 0.0f ){

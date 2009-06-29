@@ -37,15 +37,15 @@ import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.struct.DataReader;
 import jp.nyatla.nymmd.struct.StructReader;
 import jp.nyatla.nymmd.struct.StructType;
-import jp.nyatla.nymmd.types.Color3;
-import jp.nyatla.nymmd.types.Color4;
+import jp.nyatla.nymmd.types.MmdColor3;
+import jp.nyatla.nymmd.types.MmdColor4;
 
 public class PMD_Material implements StructType
 {
-	public final Color4		col4Diffuse=new Color4();
+	public final MmdColor4		col4Diffuse=new MmdColor4();
 	public float				fShininess;
-	public final Color3		col3Specular=new Color3();
-	public final Color3		col3Ambient=new Color3();
+	public final MmdColor3		col3Specular=new MmdColor3();
+	public final MmdColor3		col3Ambient=new MmdColor3();
 	public int			unknown;
 	public int			ulNumIndices;		// この材質に対応する頂点数
 	public String		szTextureFileName;	// テクスチャファイル名

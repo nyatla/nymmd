@@ -34,7 +34,7 @@ package jp.nyatla.nymmd.core;
 import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.struct.pmd.PMD_FACE;
 import jp.nyatla.nymmd.struct.pmd.PMD_FACE_VTX;
-import jp.nyatla.nymmd.types.Vector3;
+import jp.nyatla.nymmd.types.MmdVector3;
 
 public class PmdFace
 {
@@ -66,7 +66,7 @@ public class PmdFace
 		return;
 	}
 
-	public void setFace(Vector3[] pvec3Vertices) throws MmdException
+	public void setFace(MmdVector3[] pvec3Vertices) throws MmdException
 	{
 		if (this._face_vertex == null) {
 			throw new MmdException();
@@ -80,7 +80,7 @@ public class PmdFace
 		return;
 	}
 
-	public void blendFace(Vector3[] pvec3Vertices, float fRate) throws MmdException
+	public void blendFace(MmdVector3[] pvec3Vertices, float fRate) throws MmdException
 	{
 		if (this._face_vertex == null) {
 			throw new MmdException();

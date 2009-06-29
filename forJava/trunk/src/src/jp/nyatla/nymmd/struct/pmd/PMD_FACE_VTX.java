@@ -34,11 +34,11 @@ package jp.nyatla.nymmd.struct.pmd;
 
 import jp.nyatla.nymmd.*;
 import jp.nyatla.nymmd.struct.*;
-import jp.nyatla.nymmd.types.Vector3;
+import jp.nyatla.nymmd.types.MmdVector3;
 public class PMD_FACE_VTX implements StructType
 {
 	public int	ulIndex;
-	public Vector3 vec3Pos=new Vector3();
+	public MmdVector3 vec3Pos=new MmdVector3();
 	public void read(DataReader i_reader) throws MmdException
 	{
 		this.ulIndex=i_reader.readInt();

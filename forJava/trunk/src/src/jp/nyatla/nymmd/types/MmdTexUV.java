@@ -31,23 +31,23 @@
  */
 package jp.nyatla.nymmd.types;
 
-public class Color4
+
+public class MmdTexUV
 {
-	public float r, g, b, a;
-	public void setValue(Color4 v)
+	public float u, v;
+	public static MmdTexUV[] createArray(int i_length)
 	{
-		this.r=v.r;
-		this.g=v.g;
-		this.b=v.b;
-		this.a=v.a;
-		return;
+		MmdTexUV[] ret=new MmdTexUV[i_length];
+		for(int i=0;i<i_length;i++)
+		{
+			ret[i]=new MmdTexUV();
+		}
+		return ret;
 	}
-	public void getValue(float[] v,int i_st)
+	public void setValue(MmdTexUV v)
 	{
-		v[i_st+0]=this.r;
-		v[i_st+1]=this.g;
-		v[i_st+2]=this.b;
-		v[i_st+3]=this.a;
+		this.u=v.u;
+		this.v=v.v;
 		return;
-	}
+	}	
 }
