@@ -8,7 +8,7 @@ using System.IO;
 
 using jp.nyatla.nymmd.cs;
 using jp.nyatla.nymmd.cs.types;
-namespace NyMmdTest
+namespace NyMmdUtils
 {
 
     class D3dTextureData
@@ -96,6 +96,9 @@ namespace NyMmdTest
         }
     }
 
+    /*  Direct3dを使ったMMDレンダラーです。
+     * 
+     */
     public class MmdPmdRenderD3d : IMmdPmdRender
     {
         private D3dTextureList _texture_list;
@@ -123,8 +126,16 @@ namespace NyMmdTest
         {
             this._ref_pmd = i_pmd;
             int number_of_vertex = i_pmd.getNumberOfVertex();
+            this._vertex_array = new CustomVertex.PositionNormalTextured[number_of_vertex];
 
-            this._vertex_array = new CustomVertex.PositionNormal[number_of_vertex];
+
+            MmdTexUV[] uv_array = i_pmd.getUvArray();
+            //先にセットできるものはセットしておく
+            for (int i = 0; i < number_of_vertex; i++)
+            {
+                this._vertex_array[i].Tu = uv_array[i].u;
+                this._vertex_array[i].Tv = uv_array[i].v;
+            }
 
             //matreial
             PmdMaterial[] m = i_pmd.getMaterials();
@@ -154,11 +165,11 @@ namespace NyMmdTest
             this._materials = d3d_materials.ToArray();
             //
             this._vertex_buffer = new VertexBuffer(
-                typeof(CustomVertex.PositionNormal),
-                number_of_vertex, this._device, 0, CustomVertex.PositionNormal.Format, Pool.Managed);
+                typeof(CustomVertex.PositionNormalTextured),
+                number_of_vertex, this._device, 0, CustomVertex.PositionNormalTextured.Format, Pool.Managed);
             return;
         }
-        private CustomVertex.PositionNormal[] _vertex_array;
+        private CustomVertex.PositionNormalTextured[] _vertex_array;
         private MmdPmdModel _ref_pmd;
 
         //この関数でthis._vertex_arrayを更新する。
@@ -169,30 +180,31 @@ namespace NyMmdTest
             MmdVector3[] org_pos_array = pmd.getPositionArray();
             MmdVector3[] org_normal_array = pmd.getNormatArray();
             PmdSkinInfo[] org_skin_info = pmd.getSkinInfoArray();
-            CustomVertex.PositionNormal[] vertex_array = this._vertex_array;
+            CustomVertex.PositionNormalTextured[] vertex_array = this._vertex_array;
             // 頂点スキニング
             MmdMatrix matTemp = new MmdMatrix();
             MmdVector3 position = new MmdVector3();
             MmdVector3 normal = new MmdVector3();
             for (int i = 0; i < number_of_vertex; i++)
             {
-                if (org_skin_info[i].fWeight == 0.0f)
+                PmdSkinInfo si = org_skin_info[i];
+                if (si.fWeight == 0.0f)
                 {
-                    MmdMatrix mat = i_skinning_mat[org_skin_info[i].unBoneNo[1]];
+                    MmdMatrix mat = i_skinning_mat[si.unBoneNo[1]];
                     position.Vector3Transform(org_pos_array[i], mat);
                     normal.Vector3Rotate(org_normal_array[i], mat);
                 }
-                else if (org_skin_info[i].fWeight >= 0.9999f)
+                else if (si.fWeight >= 0.9999f)
                 {
-                    MmdMatrix mat = i_skinning_mat[org_skin_info[i].unBoneNo[0]];
+                    MmdMatrix mat = i_skinning_mat[si.unBoneNo[0]];
                     position.Vector3Transform(org_pos_array[i], mat);
                     normal.Vector3Rotate(org_normal_array[i], mat);
                 }
                 else
                 {
-                    MmdMatrix mat0 = i_skinning_mat[org_skin_info[i].unBoneNo[0]];
-                    MmdMatrix mat1 = i_skinning_mat[org_skin_info[i].unBoneNo[1]];
-                    matTemp.MatrixLerp(mat0, mat1, org_skin_info[i].fWeight);
+                    MmdMatrix mat0 = i_skinning_mat[si.unBoneNo[0]];
+                    MmdMatrix mat1 = i_skinning_mat[si.unBoneNo[1]];
+                    matTemp.MatrixLerp(mat0, mat1, si.fWeight);
                     position.Vector3Transform(org_pos_array[i], matTemp);
                     normal.Vector3Rotate(org_normal_array[i], matTemp);
                 }
@@ -241,7 +253,7 @@ namespace NyMmdTest
                 //インデクスをセット
                 dev.Indices = material[i].index_buf;
                 dev.SetStreamSource(0, this._vertex_buffer, 0);
-                dev.VertexFormat = CustomVertex.PositionNormal.Format;
+                dev.VertexFormat = CustomVertex.PositionNormalTextured.Format;
                 dev.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, material[i].ulNumIndices, 0, material[i].ulNumIndices);
             }
             return;

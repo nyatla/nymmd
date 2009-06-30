@@ -8,6 +8,7 @@ using Microsoft.DirectX.Direct3D;
 using System.Diagnostics;
 using System.IO;
 using System.Drawing;
+using NyMmdUtils;
 
 using jp.nyatla.nymmd.cs;
 
