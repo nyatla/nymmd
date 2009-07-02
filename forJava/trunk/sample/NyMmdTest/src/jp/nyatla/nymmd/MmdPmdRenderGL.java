@@ -135,9 +135,10 @@ class GLMaterial
 {
 	public final float[] color = new float[12];// Diffuse,Specular,Ambientの順
 	public float fShininess;
-	public ShortBuffer indices_size;
+	public ShortBuffer indices;
 	public int ulNumIndices;
 	public GLTextureData texture;
+	public int unknown;
 }
 
 public class MmdPmdRenderGL implements IMmdPmdRender
@@ -185,6 +186,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 		Vector<GLMaterial> gl_materials = new Vector<GLMaterial>();
 		for (int i = 0; i < m.length; i++) {
 			final GLMaterial new_material = new GLMaterial();
+			new_material.unknown=m[i].unknown;
 			// D,A,S[rgba]
 			m[i].col4Diffuse.getValue(new_material.color, 0);
 			m[i].col4Ambient.getValue(new_material.color, 4);
@@ -195,7 +197,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 			} else {
 				new_material.texture = null;
 			}
-			new_material.indices_size=ShortBuffer.wrap(m[i].indices);
+			new_material.indices=ShortBuffer.wrap(m[i].indices);
 			new_material.ulNumIndices = m[i].indices.length;
 			gl_materials.add(new_material);
 		}
@@ -289,12 +291,17 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, this._gl_materials[i].color, 4);
 			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, this._gl_materials[i].color,8);
 			gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, this._gl_materials[i].fShininess);
-			if (this._gl_materials[i].color[3] < 1.0f) {// col4Diffuse.a
-				gl.glDisable(GL.GL_CULL_FACE);
-			} else {
-				gl.glEnable(GL.GL_CULL_FACE);
-			}
 
+            //カリング判定：何となくうまくいったから
+            if ((0x100 & this._gl_materials[i].unknown) == 0x100)
+            {
+            	gl.glDisable(GL.GL_CULL_FACE);
+            }
+            else
+            {
+            	gl.glEnable(GL.GL_CULL_FACE);
+            }
+            
 			if (this._gl_materials[i].texture != null) {
 				// テクスチャありならBindする
 				gl.glEnable(GL.GL_TEXTURE_2D);
@@ -304,7 +311,7 @@ public class MmdPmdRenderGL implements IMmdPmdRender
 				gl.glDisable(GL.GL_TEXTURE_2D);
 			}
 			// 頂点インデックスを指定してポリゴン描画
-			gl.glDrawElements(GL.GL_TRIANGLES, this._gl_materials[i].ulNumIndices, GL.GL_UNSIGNED_SHORT, this._gl_materials[i].indices_size);
+			gl.glDrawElements(GL.GL_TRIANGLES, this._gl_materials[i].ulNumIndices, GL.GL_UNSIGNED_SHORT, this._gl_materials[i].indices);
 			vertex_index += this._gl_materials[i].ulNumIndices;
 		}
 

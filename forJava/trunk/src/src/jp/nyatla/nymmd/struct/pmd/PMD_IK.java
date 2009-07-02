@@ -44,7 +44,7 @@ public class PMD_IK implements StructType
 	public int	cbNumLink;	// IKを構成するボーンの数
 	public int unCount;
 	public float fFact;
-	public int[] punLinkNo=new int[128];// IKを構成するボーンの配列(可変長配列)
+	public int[] punLinkNo;// IKを構成するボーンの配列(可変長配列)
 	
 	public void read(DataReader i_reader) throws MmdException
 	{
@@ -54,9 +54,7 @@ public class PMD_IK implements StructType
 		this.unCount=i_reader.readUnsignedShort();
 		this.fFact=i_reader.readFloat();
 		//必要な数だけ配列を確保しなおす。
-		if(this.cbNumLink>this.punLinkNo.length){
-			this.punLinkNo=new int[this.cbNumLink];
-		}
+		this.punLinkNo=new int[this.cbNumLink];
 		for(int i=0;i<this.cbNumLink;i++){
 			this.punLinkNo[i]=i_reader.readUnsignedShort();
 		}

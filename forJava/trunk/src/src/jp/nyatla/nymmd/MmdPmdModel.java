@@ -61,7 +61,6 @@ public class MmdPmdModel
 	private PmdBone[] m_pBoneArray; // ボーン配列
 	private PmdIK[] m_pIKArray;    // IK配列
 	
-//	private short[] _indices;
 	private MmdVector3[] _position_array;	// 座標配列	
 	private MmdVector3[] _normal_array;		// 法線配列
 	private MmdTexUV[] _texture_uv;		// テクスチャ座標配列
@@ -197,6 +196,7 @@ public class MmdPmdModel
 		{
 			tmp_pmd_material.read(reader);
 			this._materials[i]=new PmdMaterial();
+			this._materials[i].unknown=tmp_pmd_material.unknown;
 			final int num_of_indices=tmp_pmd_material.ulNumIndices;
 
 			this._materials[i].indices=new short[num_of_indices];

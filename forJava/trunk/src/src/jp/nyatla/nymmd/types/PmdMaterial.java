@@ -9,4 +9,5 @@ public class PmdMaterial
 	public float fShininess;
 	public String texture_name;
 	public short[] indices;
+	public int unknown;
 };

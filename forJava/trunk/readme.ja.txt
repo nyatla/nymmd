@@ -1,7 +1,7 @@
 NyMmd
 Copyright (C)2009 nyatla
 
-version 1.0.1
+version 1.1.0
 
 http://nyatla.jp/
 wm(at)nyatla.jp
@@ -34,11 +34,11 @@ NyMmdは、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能�
 
 2.eclipseにNyMmdのトップレベルディレクトリをインポートします。
 
-3.NyMmdプロジェクトがインポートできたら、文字コードをUTF8にして、
-  JVMのバージョンを1.5以上に設定します。
+3.NyMmdとNyMmdTestのプロジェクトがインポートできたら、文字コード
+  をUTF8にして、JVMのバージョンを1.5以上に設定します。
 
-4.エントリポイントはjp.nyatla.mmd.testにある、MmdTest.javaです。
-  実行してください。
+4.エントリポイントはNyMmdTestプロジェクトのjp.nyatla.mmd.testにある、
+  MmdTest.javaです。実行してください。
 
 5.後はサンプル読んで頑張ってください（無責任）
 
