@@ -211,6 +211,10 @@ namespace jp.nyatla.nymmd.cs
             MotionData[] pMotionDataList = _ref_vmd_motion.refMotionDataArray();
             for (int i = 0; i < pMotionDataList.Length; i++)
             {
+                if (ppBone[i] == null)
+                {
+                    continue;
+                }
                 getMotionPosRot(pMotionDataList[i], m_fFrame, vec3Position, vec4Rotate);
 
                 // 補間なし
@@ -230,6 +234,11 @@ namespace jp.nyatla.nymmd.cs
             FaceData[] pFaceDataList = _ref_vmd_motion.refFaceDataArray();
             for (int i = 0; i < pFaceDataList.Length; i++)
             {
+                if (ppFace[i] == null)
+                {
+                    continue;
+                }
+
                 float fFaceRate = getFaceRate(pFaceDataList[i], m_fFrame);
 
                 if (fFaceRate == 1.0f)

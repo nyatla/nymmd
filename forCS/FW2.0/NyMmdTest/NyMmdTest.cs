@@ -47,9 +47,14 @@ namespace NyMmdTest
 {
     class DataIo : IMmdDataIo
     {
+        private String _root_dir;
+        public DataIo(String i_dir)
+        {
+            this._root_dir = i_dir;
+        }
         public Stream request(String i_name)
         {
-            return new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\" + i_name).BaseStream;
+            return new StreamReader(_root_dir + i_name).BaseStream;
         }
 
     }
@@ -148,7 +153,7 @@ namespace NyMmdTest
             this._player = new MmdMotionPlayer(this._pmd, this._vmd);
             //player
             this._render = new MmdPmdRenderD3d(this._device);
-            this._render.setPmd(this._pmd, new DataIo());
+            this._render.setPmd(this._pmd, new DataIo("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\"));
             //
             this.animation_start_time = System.Environment.TickCount;
             this._player.setLoop(true);
@@ -159,9 +164,8 @@ namespace NyMmdTest
         private MmdMotionPlayer _player;
         private MmdPmdModel _pmd;
         private MmdVmdMotion _vmd;
-        private MmdPmdRenderD3d _render;
+        private IMmdPmdRender _render;
         //メインループ処理
-        static float r = 0;
         public void MainLoop()
         {
             int iTime = System.Environment.TickCount - this.animation_start_time;
@@ -170,9 +174,6 @@ namespace NyMmdTest
 
             lock (this)
             {
-                // 背景サーフェイスを直接描画
-                Surface dest_surface = this._device.GetBackBuffer(0, 0, BackBufferType.Mono);
-
                 // 3Dオブジェクトの描画はここから
                 this._device.BeginScene();
                 this._device.Clear(ClearFlags.ZBuffer | ClearFlags.Target, Color.Blue, 1.0f, 0);

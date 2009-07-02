@@ -42,6 +42,7 @@ namespace jp.nyatla.nymmd.cs.types
         public MmdColor4 col4Ambient = new MmdColor4();
         public float fShininess;
         public String texture_name;
+        public int unknown;
         public short[] indices;
     };
 }

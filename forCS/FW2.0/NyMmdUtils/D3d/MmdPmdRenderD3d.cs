@@ -33,12 +33,18 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+#if NyMmd_FRAMEWORK_CFW
+using Microsoft.WindowsMobile.DirectX.Direct3D;
+using Microsoft.WindowsMobile.DirectX;
+#else
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+#endif
 using System.IO;
 
 using jp.nyatla.nymmd.cs;
 using jp.nyatla.nymmd.cs.types;
+
 namespace NyMmdUtils
 {
 
@@ -120,6 +126,7 @@ namespace NyMmdUtils
         public D3dTextureData texture;
         public int ulNumIndices;
         public IndexBuffer index_buf;
+        public int unknown;
         public Material material = new Material();
         public void Dispose()
         {
@@ -127,7 +134,8 @@ namespace NyMmdUtils
         }
     }
 
-    /*  Direct3dを使ったMMDレンダラーです。
+    /*  MMDレンダラにちょっと細工をしてですね…。
+     *  
      * 
      */
     public class MmdPmdRenderD3d : IMmdPmdRender
@@ -190,6 +198,7 @@ namespace NyMmdUtils
                 {
                     new_material.texture = null;
                 }
+                new_material.unknown = m[i].unknown;
                 new_material.ulNumIndices = number_of_indices;
                 d3d_materials.Add(new_material);
             }
@@ -262,15 +271,35 @@ namespace NyMmdUtils
             D3dMaterial[] material = this._materials;
             for (int i = 0; i < material.Length; i++)
             {
-
-                if (material[i].material.DiffuseColor.Alpha < 1.0f)
-                {
-                    dev.RenderState.CullMode = Cull.CounterClockwise;
-                }
-                else
+                //カリング判定：何となくうまくいったから
+                if ((0x100 & material[i].unknown) == 0x100)
                 {
                     dev.RenderState.CullMode = Cull.None;
                 }
+                else
+                {
+                    dev.RenderState.CullMode = Cull.CounterClockwise;
+                }
+                /*                if ((0x0f & material[i].unknown) == 0x02)
+                                {
+                                    dev.RenderState.CullMode = Cull.None;
+                                }
+                                else
+                                {
+                                    dev.RenderState.CullMode = Cull.CounterClockwise;
+                                }*/
+                /*
+                if (material[i].material.DiffuseColor.Alpha < 1.0f && material[i].texture == null)
+                {
+                    dev.RenderState.CullMode = Cull.None;
+                }
+                else
+                {
+                    dev.RenderState.CullMode = Cull.CounterClockwise;
+                }
+                */
+
+
                 dev.Material = material[i].material;
                 if (material[i].texture != null)
                 {
@@ -285,7 +314,7 @@ namespace NyMmdUtils
                 dev.Indices = material[i].index_buf;
                 dev.SetStreamSource(0, this._vertex_buffer, 0);
                 dev.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-                dev.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, material[i].ulNumIndices, 0, material[i].ulNumIndices);
+                dev.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, material[i].ulNumIndices, 0, material[i].ulNumIndices/3);
             }
             return;
         }

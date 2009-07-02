@@ -209,6 +209,8 @@ namespace jp.nyatla.nymmd.cs
                 tmp_pmd_material.read(reader);
 
                 this._materials[i] = new PmdMaterial();
+                this._materials[i].unknown = tmp_pmd_material.unknown;
+
                 this._materials[i].indices = new short[tmp_pmd_material.ulNumIndices];
                 System.Array.Copy(indices_array, indices_ptr, this._materials[i].indices, 0, tmp_pmd_material.ulNumIndices);
                 indices_ptr += tmp_pmd_material.ulNumIndices;
