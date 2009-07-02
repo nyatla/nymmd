@@ -148,7 +148,8 @@ namespace NyMmdTest
             //StreamReader pmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\初音ミクVer2.pmd");
             //StreamReader vmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Motion\\kisimen.vmd");
             //DataIo pmd_io = new DataIo("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\");
-            
+            StreamReader pmds, vmds;
+            DataIo pmd_io;
             //PMDとVMDを開く
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
@@ -157,8 +158,8 @@ namespace NyMmdTest
                 {
                     return;
                 }
-                DataIo pmd_io = new DataIo(System.IO.Path.GetDirectoryName(ofd.FileName) + "\\");
-                StreamReader pmds = new StreamReader(ofd.FileName);
+                pmd_io = new DataIo(System.IO.Path.GetDirectoryName(ofd.FileName) + "\\");
+                pmds = new StreamReader(ofd.FileName);
             }
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
@@ -167,7 +168,7 @@ namespace NyMmdTest
                 {
                     return;
                 }
-                StreamReader vmds = new StreamReader(ofd.FileName);
+                vmds = new StreamReader(ofd.FileName);
             }
             //Mmdプレイヤーのオブジェクトを作る
             this._pmd = new MmdPmdModel(pmds);
