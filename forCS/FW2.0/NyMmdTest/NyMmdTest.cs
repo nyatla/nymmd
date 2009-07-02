@@ -145,15 +145,37 @@ namespace NyMmdTest
             this._device.Lights[0].Enabled = true;
             this._device.Lights[0].Update();
 
-            //
-            StreamReader pmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\初音ミクVer2.pmd");
-            StreamReader vmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Motion\\kisimen.vmd");
+            //StreamReader pmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\初音ミクVer2.pmd");
+            //StreamReader vmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Motion\\kisimen.vmd");
+            //DataIo pmd_io = new DataIo("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\");
+            
+            //PMDとVMDを開く
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Select PMD";
+                if (ofd.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                DataIo pmd_io = new DataIo(System.IO.Path.GetDirectoryName(ofd.FileName) + "\\");
+                StreamReader pmds = new StreamReader(ofd.FileName);
+            }
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Select VMD";
+                if (ofd.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                StreamReader vmds = new StreamReader(ofd.FileName);
+            }
+            //Mmdプレイヤーのオブジェクトを作る
             this._pmd = new MmdPmdModel(pmds);
             this._vmd = new MmdVmdMotion(vmds);
             this._player = new MmdMotionPlayer(this._pmd, this._vmd);
             //player
             this._render = new MmdPmdRenderD3d(this._device);
-            this._render.setPmd(this._pmd, new DataIo("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\"));
+            this._render.setPmd(this._pmd, pmd_io);
             //
             this.animation_start_time = System.Environment.TickCount;
             this._player.setLoop(true);
@@ -200,7 +222,10 @@ namespace NyMmdTest
         {
             lock (this)
             {
-                this._render.Dispose();
+                if (this._render != null)
+                {
+                    this._render.Dispose();
+                }
                 // Direct3D デバイスのリソース解放
                 if (this._device != null)
                 {
