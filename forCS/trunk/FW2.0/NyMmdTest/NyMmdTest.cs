@@ -59,11 +59,13 @@ namespace NyMmdTest
 
     }
 
+
     class NyMmdTest : IDisposable
     {
         //NyAR
         /// Direct3D デバイス
         private Device _device = null;
+
 
 
         /* Direct3Dデバイスを準備する関数
@@ -143,10 +145,10 @@ namespace NyMmdTest
             this._device.Lights[0].Enabled = true;
             this._device.Lights[0].Update();
 
-            StreamReader pmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\初音ミクVer2.pmd");
-            StreamReader vmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Motion\\kisimen.vmd");
-            DataIo pmd_io = new DataIo("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\");
-/*            StreamReader pmds, vmds;
+            //StreamReader pmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\初音ミクVer2.pmd");
+            //StreamReader vmds = new StreamReader("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Motion\\kisimen.vmd");
+            //DataIo pmd_io = new DataIo("D:\\application.files\\MikuMikuDance_v405\\UserFile\\Model\\");
+            StreamReader pmds, vmds;
             DataIo pmd_io;
             //PMDとVMDを開く
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -167,7 +169,7 @@ namespace NyMmdTest
                     return;
                 }
                 vmds = new StreamReader(ofd.FileName);
-            }*/
+            }
             //Mmdプレイヤーのオブジェクトを作る
             this._pmd = new MmdPmdModel(pmds);
             this._vmd = new MmdVmdMotion(vmds);
@@ -178,19 +180,6 @@ namespace NyMmdTest
             //
             this.animation_start_time = System.Environment.TickCount;
             this._player.setLoop(true);
-            /*ベンチマーク
-             * 
-             */
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i < 1000; i++)
-            {
-                this._render.updateSkinning(this._player.refSkinningMatrix());
-                this._player.updateMotion(0.01f);
-            }
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds + "[ms]");
-
             return;
         }
         private int animation_start_time;
@@ -217,6 +206,7 @@ namespace NyMmdTest
                 Matrix tr = Matrix.Translation(0, -10, 30);
                 this._device.SetTransform(TransformType.World, tr);
                 this._player.updateMotion(fDiffTime);
+                this._render.updateSkinning(this._player.refSkinningMatrix());
                 this._render.render();
 
                 // 描画はここまで

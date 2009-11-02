@@ -42,7 +42,7 @@ namespace jp.nyatla.nymmd.cs.struct_type.pmd
         public int nChildNo;			// 子ボーン番号
         public int cbKind;		// ボーンの種類
         public int unIKTarget;	// IK時のターゲットボーン
-        public TMmdVector3 vec3Position;	// モデル原点からの位置
+        public MmdVector3 vec3Position = new MmdVector3();	// モデル原点からの位置
 
         public void read(DataReader i_reader)
         {
@@ -52,7 +52,7 @@ namespace jp.nyatla.nymmd.cs.struct_type.pmd
             this.nChildNo = i_reader.readShort();
             this.cbKind = i_reader.readByte();
             this.unIKTarget = i_reader.readShort();
-            StructReader.read(ref this.vec3Position, i_reader);
+            StructReader.read(this.vec3Position, i_reader);
             return;
         }
     }

@@ -270,7 +270,7 @@ namespace jp.nyatla.nymmd.cs
                         BoneKeyFrame pKeyFrame = pMotTemp.pKeyFrames[pMotTemp.ulNumKeyFrames];
 
                         pKeyFrame.fFrameNo = (float)tmp_vmd_motion[i].ulFrameNo;
-                        pKeyFrame.vec3Position=tmp_vmd_motion[i].vec3Position;
+                        pKeyFrame.vec3Position.setValue(tmp_vmd_motion[i].vec3Position);
                         pKeyFrame.vec4Rotate.QuaternionNormalize(tmp_vmd_motion[i].vec4Rotate);
 
                         pMotTemp.ulNumKeyFrames++;

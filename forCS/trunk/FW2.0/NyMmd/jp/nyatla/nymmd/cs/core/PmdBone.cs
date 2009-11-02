@@ -40,8 +40,8 @@ namespace jp.nyatla.nymmd.cs.core
     public class PmdBone
     {
 	private String _name;
-	private TMmdVector3 _pmd_bone_position;
-	private TMmdVector3 m_vec3Offset;
+	private MmdVector3 _pmd_bone_position=new MmdVector3();
+	private MmdVector3 m_vec3Offset=new MmdVector3();
 	private MmdMatrix m_matInvTransform=new MmdMatrix();	// 初期値のボーンを原点に移動させるような行列
 
 	private PmdBone	_parent_bone;
@@ -52,7 +52,7 @@ namespace jp.nyatla.nymmd.cs.core
 
 
 	//強制public
-	public TMmdVector3 m_vec3Position;
+	public MmdVector3 m_vec3Position=new MmdVector3();
 	public MmdVector4 m_vec4Rotate=new MmdVector4();
 	public bool m_bIKLimitAngle;	// IK時に角度制限をするかどうか
 	//強制public/
@@ -68,17 +68,17 @@ namespace jp.nyatla.nymmd.cs.core
 		this._name=pPMDBoneData.szName;
 
 		// 位置のコピー
-		this._pmd_bone_position=pPMDBoneData.vec3Position;
+		this._pmd_bone_position.setValue(pPMDBoneData.vec3Position);
 
 		// 親ボーンの設定
 		if( pPMDBoneData.nParentNo != -1 )
 		{
 			this._parent_bone = pBoneArray[pPMDBoneData.nParentNo];
-			m_vec3Offset.Vector3Sub(ref this._pmd_bone_position,ref this._parent_bone._pmd_bone_position);
+			m_vec3Offset.Vector3Sub(this._pmd_bone_position,this._parent_bone._pmd_bone_position);
 		}else{
 			// 親なし
 			this._parent_bone=null;
-			this.m_vec3Offset=this._pmd_bone_position;
+			this.m_vec3Offset.setValue(this._pmd_bone_position);
 		}
 
 		// 子ボーンの設定
@@ -100,7 +100,7 @@ namespace jp.nyatla.nymmd.cs.core
 	public void recalcOffset()
 	{
 		if(this._parent_bone!=null){
-			m_vec3Offset.Vector3Sub(ref this._pmd_bone_position,ref this._parent_bone._pmd_bone_position);
+			m_vec3Offset.Vector3Sub(this._pmd_bone_position,this._parent_bone._pmd_bone_position);
 		}
 		return;	
 	}
@@ -143,19 +143,20 @@ namespace jp.nyatla.nymmd.cs.core
 	}
 	private MmdMatrix _lookAt_matTemp=new MmdMatrix();
 	private MmdMatrix _lookAt_matInvTemp=new MmdMatrix();
-//	private MmdVector3 _lookAt_vec3LocalTgtPosZY=new MmdVector3();
-//	private MmdVector3 _lookAt_vec3LocalTgtPosXZ=new MmdVector3();
-//	private MmdVector3 _lookAt_vec3Angle=new MmdVector3();
+	private MmdVector3 _lookAt_vec3LocalTgtPosZY=new MmdVector3();
+	private MmdVector3 _lookAt_vec3LocalTgtPosXZ=new MmdVector3();
+	private MmdVector3 _lookAt_vec3Angle=new MmdVector3();
 	
 	
 	
-	public 	void lookAt(ref TMmdVector3 pvecTargetPos )
+	public 	void lookAt(MmdVector3 pvecTargetPos )
 	{
 		// どうもおかしいので要調整
 		MmdMatrix matTemp=this._lookAt_matTemp;
 		MmdMatrix matInvTemp=this._lookAt_matInvTemp;
-		TMmdVector3 vec3LocalTgtPosZY;
-        TMmdVector3 vec3LocalTgtPosXZ;
+		MmdVector3		vec3LocalTgtPosZY=this._lookAt_vec3LocalTgtPosZY;
+        MmdVector3 vec3LocalTgtPosXZ = this._lookAt_vec3LocalTgtPosXZ;
+
 		matTemp.MatrixIdentity();
 		matTemp.m[3,0] = m_vec3Position.x + m_vec3Offset.x; 
 		matTemp.m[3,1] = m_vec3Position.y + m_vec3Offset.y; 
@@ -169,16 +170,16 @@ namespace jp.nyatla.nymmd.cs.core
 		matTemp.MatrixInverse(matTemp);
 
 
-		TMmdVector3.Vector3Transform(out vec3LocalTgtPosZY,ref pvecTargetPos, matTemp );
+		vec3LocalTgtPosZY.Vector3Transform(pvecTargetPos, matTemp );
 
-        vec3LocalTgtPosXZ=vec3LocalTgtPosZY;
+		vec3LocalTgtPosXZ.setValue(vec3LocalTgtPosZY);
 		vec3LocalTgtPosXZ.y = 0.0f;
-        vec3LocalTgtPosXZ.Vector3Normalize(ref vec3LocalTgtPosXZ);
+		vec3LocalTgtPosXZ.Vector3Normalize(vec3LocalTgtPosXZ);
 
 		vec3LocalTgtPosZY.x = 0.0f;
-        vec3LocalTgtPosZY.Vector3Normalize(ref vec3LocalTgtPosZY);
+		vec3LocalTgtPosZY.Vector3Normalize(vec3LocalTgtPosZY);
 
-        TMmdVector3 vec3Angle;
+		MmdVector3 vec3Angle = this._lookAt_vec3Angle;
 		vec3Angle.x=vec3Angle.y=vec3Angle.z=0;
 
 		if( vec3LocalTgtPosZY.z > 0.0f ){
@@ -203,7 +204,7 @@ namespace jp.nyatla.nymmd.cs.core
 			vec3Angle.y =(float)( 80.0*Math.PI/180.0);
 		}
 
-        m_vec4Rotate.QuaternionCreateEuler(ref vec3Angle);
+		m_vec4Rotate.QuaternionCreateEuler(vec3Angle);
 	}
     }
 }

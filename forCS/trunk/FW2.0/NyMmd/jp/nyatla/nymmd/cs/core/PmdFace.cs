@@ -63,14 +63,14 @@ namespace jp.nyatla.nymmd.cs.core
                 for (int i = 0; i < this._face_vertex.Length; i++)
                 {
                     PMD_FACE_VTX vertex = vertex_array[i];
-                    vertex.vec3Pos.Vector3Add(ref pPMDFaceBase._face_vertex[vertex.ulIndex].vec3Pos,ref  vertex.vec3Pos);
+                    vertex.vec3Pos.Vector3Add(pPMDFaceBase._face_vertex[vertex.ulIndex].vec3Pos, vertex.vec3Pos);
                     vertex.ulIndex = pPMDFaceBase._face_vertex[vertex.ulIndex].ulIndex;
                 }
             }
             return;
         }
 
-        public void setFace(TMmdVector3[] pvec3Vertices)
+        public void setFace(MmdVector3[] pvec3Vertices)
         {
             if (this._face_vertex == null)
             {
@@ -81,12 +81,12 @@ namespace jp.nyatla.nymmd.cs.core
             for (int i = 0; i < vertex_array.Length; i++)
             {
                 PMD_FACE_VTX vertex = vertex_array[i];
-                pvec3Vertices[vertex.ulIndex]=vertex.vec3Pos;
+                pvec3Vertices[vertex.ulIndex].setValue(vertex.vec3Pos);
             }
             return;
         }
 
-        public void blendFace(TMmdVector3[] pvec3Vertices, float fRate)
+        public void blendFace(MmdVector3[] pvec3Vertices, float fRate)
         {
             if (this._face_vertex == null)
             {
@@ -98,7 +98,7 @@ namespace jp.nyatla.nymmd.cs.core
             {
                 PMD_FACE_VTX vertex = vertex_array[i];
                 int ulIndex = vertex.ulIndex;
-                TMmdVector3.Vector3Lerp(out pvec3Vertices[ulIndex],ref pvec3Vertices[ulIndex],ref vertex.vec3Pos, fRate);
+                pvec3Vertices[ulIndex].Vector3Lerp(pvec3Vertices[ulIndex], vertex.vec3Pos, fRate);
             }
             return;
         }

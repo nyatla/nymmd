@@ -52,7 +52,7 @@ namespace jp.nyatla.nymmd.cs
         private PmdBone m_pNeckBone;		// 首のボーン
 
 
-        private void getMotionPosRot(MotionData pMotionData, float fFrame, out TMmdVector3 pvec3Pos, MmdVector4 pvec4Rot)
+        private void getMotionPosRot(MotionData pMotionData, float fFrame, MmdVector3 pvec3Pos, MmdVector4 pvec4Rot)
         {
             int i;
             int ulNumKeyFrame = pMotionData.ulNumKeyFrames;
@@ -91,14 +91,14 @@ namespace jp.nyatla.nymmd.cs
             if (lKey0 != lKey1)
             {
                 fLerpValue = (fFrame - fTime0) / (fTime1 - fTime0);
-                TMmdVector3.Vector3Lerp(out pvec3Pos,ref pMotionData.pKeyFrames[lKey0].vec3Position, ref pMotionData.pKeyFrames[lKey1].vec3Position, fLerpValue);
+                pvec3Pos.Vector3Lerp(pMotionData.pKeyFrames[lKey0].vec3Position, pMotionData.pKeyFrames[lKey1].vec3Position, fLerpValue);
                 pvec4Rot.QuaternionSlerp(pMotionData.pKeyFrames[lKey0].vec4Rotate, pMotionData.pKeyFrames[lKey1].vec4Rotate, fLerpValue);
                 pvec4Rot.QuaternionNormalize(pvec4Rot);//これほんとにいるの？
             }
             else
             {
-                pvec3Pos=pMotionData.pKeyFrames[lKey0].vec3Position;
-                pvec4Rot=pMotionData.pKeyFrames[lKey0].vec4Rotate;
+                pvec3Pos.setValue(pMotionData.pKeyFrames[lKey0].vec3Position);
+                pvec4Rot.setValue(pMotionData.pKeyFrames[lKey0].vec4Rotate);
             }
         }
 
@@ -205,7 +205,7 @@ namespace jp.nyatla.nymmd.cs
             //---------------------------------------------------------
             // 指定フレームのデータでボーンを動かす
             PmdBone[] ppBone = this.m_ppBoneList;
-            TMmdVector3 vec3Position;
+            MmdVector3 vec3Position = new MmdVector3();
             MmdVector4 vec4Rotate = new MmdVector4();
 
             MotionData[] pMotionDataList = _ref_vmd_motion.refMotionDataArray();
@@ -215,10 +215,10 @@ namespace jp.nyatla.nymmd.cs
                 {
                     continue;
                 }
-                getMotionPosRot(pMotionDataList[i], m_fFrame, out vec3Position, vec4Rotate);
+                getMotionPosRot(pMotionDataList[i], m_fFrame, vec3Position, vec4Rotate);
 
                 // 補間なし
-                ppBone[i].m_vec3Position=vec3Position;
+                ppBone[i].m_vec3Position.setValue(vec3Position);
                 ppBone[i].m_vec4Rotate.setValue(vec4Rotate);
 
                 //	 補間あり
@@ -228,7 +228,7 @@ namespace jp.nyatla.nymmd.cs
 
             //---------------------------------------------------------
             // 指定フレームのデータで表情を変形する
-            TMmdVector3[] position_array = this._ref_pmd_model.getPositionArray();
+            MmdVector3[] position_array = this._ref_pmd_model.getPositionArray();
 
             PmdFace[] ppFace = this.m_ppFaceList;
             FaceData[] pFaceDataList = _ref_vmd_motion.refFaceDataArray();
@@ -283,7 +283,7 @@ namespace jp.nyatla.nymmd.cs
 
         public void updateMotion(float fElapsedFrame)
         {
-            TMmdVector3[] position_array = this._ref_pmd_model.getPositionArray();
+            MmdVector3[] position_array = this._ref_pmd_model.getPositionArray();
             PmdIK[] ik_array = this._ref_pmd_model.getIKArray();
             PmdBone[] bone_array = this._ref_pmd_model.getBoneArray();
             PmdFace[] face_array = this._ref_pmd_model.getFaceArray();
@@ -313,10 +313,10 @@ namespace jp.nyatla.nymmd.cs
          * look me
          * @param pvec3LookTarget
          */
-//        private TMmdVector3 __updateNeckBone_looktarget = new MmdVector3();
+        private MmdVector3 __updateNeckBone_looktarget = new MmdVector3();
         public void updateNeckBone(float i_x, float i_y, float i_z)
         {
-            TMmdVector3 looktarget;// = this.__updateNeckBone_looktarget;
+            MmdVector3 looktarget = this.__updateNeckBone_looktarget;
             looktarget.x = i_x;
             looktarget.y = i_y;
             looktarget.z = i_z;
@@ -324,7 +324,7 @@ namespace jp.nyatla.nymmd.cs
             {
                 return;
             }
-            this.m_pNeckBone.lookAt(ref looktarget);
+            this.m_pNeckBone.lookAt(looktarget);
 
             PmdBone[] bone_array = this._ref_pmd_model.getBoneArray();
             int i;

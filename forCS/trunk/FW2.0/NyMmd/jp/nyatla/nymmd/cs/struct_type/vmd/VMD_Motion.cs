@@ -42,7 +42,7 @@ namespace jp.nyatla.nymmd.cs.struct_type.vmd
         public String szBoneName;	// ボーン名
         public long ulFrameNo;		// フレーム番号
 
-        public TMmdVector3 vec3Position;// 位置
+        public MmdVector3 vec3Position = new MmdVector3();// 位置
         public MmdVector4 vec4Rotate = new MmdVector4();  // 回転(クォータニオン)
 
         public int[] cInterpolation1 = new int[16];	// 補間情報
@@ -56,7 +56,7 @@ namespace jp.nyatla.nymmd.cs.struct_type.vmd
             //szName
             this.szBoneName = i_reader.readAscii(15);
             this.ulFrameNo = i_reader.readInt();
-            StructReader.read(ref this.vec3Position, i_reader);
+            StructReader.read(this.vec3Position, i_reader);
             StructReader.read(this.vec4Rotate, i_reader);
             for (i = 0; i < 16; i++)
             {
