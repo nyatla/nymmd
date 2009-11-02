@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NyMmd", "NyMmd\NyMmd.csproj", "{6E0B0B92-0394-4537-8096-8EEB0DF619D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NyMmdTest", "NyMmdTest\NyMmdTest.csproj", "{F7BEABA7-50AD-4C04-9FC6-746B6190E2FB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E0B0B92-0394-4537-8096-8EEB0DF619D4} = {6E0B0B92-0394-4537-8096-8EEB0DF619D4}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NyMmdUtils", "NyMmdUtils\NyMmdUtils.csproj", "{1FF0139D-FCEB-47C5-984A-A180CD97CD50}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E0B0B92-0394-4537-8096-8EEB0DF619D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E0B0B92-0394-4537-8096-8EEB0DF619D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E0B0B92-0394-4537-8096-8EEB0DF619D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E0B0B92-0394-4537-8096-8EEB0DF619D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7BEABA7-50AD-4C04-9FC6-746B6190E2FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7BEABA7-50AD-4C04-9FC6-746B6190E2FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7BEABA7-50AD-4C04-9FC6-746B6190E2FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7BEABA7-50AD-4C04-9FC6-746B6190E2FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF0139D-FCEB-47C5-984A-A180CD97CD50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF0139D-FCEB-47C5-984A-A180CD97CD50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF0139D-FCEB-47C5-984A-A180CD97CD50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF0139D-FCEB-47C5-984A-A180CD97CD50}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
