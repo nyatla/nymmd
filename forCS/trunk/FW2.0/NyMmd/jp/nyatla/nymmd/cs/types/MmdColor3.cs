@@ -35,7 +35,7 @@ using System.Text;
 
 namespace jp.nyatla.nymmd.cs.types
 {
-    public class MmdColor3
+    public struct TMmdColor3
     {
         public float r, g, b;
 

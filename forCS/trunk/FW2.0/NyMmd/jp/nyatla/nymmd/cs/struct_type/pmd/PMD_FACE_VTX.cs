@@ -39,11 +39,11 @@ namespace jp.nyatla.nymmd.cs.struct_type.pmd
     public class PMD_FACE_VTX : StructType
     {
         public int ulIndex;
-        public MmdVector3 vec3Pos = new MmdVector3();
+        public TMmdVector3 vec3Pos;
         public void read(DataReader i_reader)
         {
             this.ulIndex = i_reader.readInt();
-            StructReader.read(this.vec3Pos, i_reader);
+            StructReader.read(ref this.vec3Pos, i_reader);
             return;
         }
         public static PMD_FACE_VTX[] createArray(int i_length)
@@ -58,7 +58,7 @@ namespace jp.nyatla.nymmd.cs.struct_type.pmd
         public void setValue(PMD_FACE_VTX i_value)
         {
             this.ulIndex = i_value.ulIndex;
-            this.vec3Pos.setValue(i_value.vec3Pos);
+            this.vec3Pos=i_value.vec3Pos;
             return;
         }
     }

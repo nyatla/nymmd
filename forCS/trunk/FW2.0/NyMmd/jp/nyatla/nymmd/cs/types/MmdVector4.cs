@@ -80,7 +80,7 @@ namespace jp.nyatla.nymmd.cs.types
             this.z = (pvec4Src.z * fSqr);
             this.w = (pvec4Src.w * fSqr);
         }
-        public void QuaternionCreateAxis(MmdVector3 pvec3Axis, double fRotAngle)
+        public void QuaternionCreateAxis(ref TMmdVector3 pvec3Axis, double fRotAngle)
         {
             if (Math.Abs(fRotAngle) < 0.0001f)
             {
@@ -112,7 +112,7 @@ namespace jp.nyatla.nymmd.cs.types
             this.z = pw * qz + px * qy - py * qx + pz * qw;
             this.w = pw * qw - px * qx - py * qy - pz * qz;
         }
-        public void QuaternionCreateEuler(MmdVector3 pvec3EulerAngle)
+        public void QuaternionCreateEuler(ref TMmdVector3 pvec3EulerAngle)
         {
             double xRadian = pvec3EulerAngle.x * 0.5;
             double yRadian = pvec3EulerAngle.y * 0.5;

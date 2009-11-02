@@ -36,46 +36,37 @@ using System.Text;
 
 namespace jp.nyatla.nymmd.cs.types
 {
-    public class MmdVector3
+    public struct TMmdVector3
     {
         public float x, y, z;
-        public static MmdVector3[] createArray(int i_length)
-        {
-            MmdVector3[] ret = new MmdVector3[i_length];
-            for (int i = 0; i < i_length; i++)
-            {
-                ret[i] = new MmdVector3();
-            }
-            return ret;
-        }
-        public void setValue(MmdVector3 v)
-        {
-            this.x = v.x;
-            this.y = v.y;
-            this.z = v.z;
-            return;
-        }
-        public void Vector3Add(MmdVector3 pvec3Add1, MmdVector3 pvec3Add2)
+
+        public void Vector3Add(ref TMmdVector3 pvec3Add1, ref TMmdVector3 pvec3Add2)
         {
             this.x = pvec3Add1.x + pvec3Add2.x;
             this.y = pvec3Add1.y + pvec3Add2.y;
             this.z = pvec3Add1.z + pvec3Add2.z;
             return;
         }
-        public void Vector3Sub(MmdVector3 pvec3Sub1, MmdVector3 pvec3Sub2)
+        public void Vector3Sub(ref TMmdVector3 pvec3Sub1, ref TMmdVector3 pvec3Sub2)
         {
-            this.x = pvec3Sub1.x - pvec3Sub2.x;
-            this.y = pvec3Sub1.y - pvec3Sub2.y;
-            this.z = pvec3Sub1.z - pvec3Sub2.z;
+            Vector3Sub(out this, ref pvec3Sub1, ref pvec3Sub2);
             return;
         }
-        public void Vector3MulAdd(MmdVector3 pvec3Add1, MmdVector3 pvec3Add2, float fRate)
+        public static void Vector3Sub(out TMmdVector3 o_dest,ref TMmdVector3 pvec3Sub1, ref TMmdVector3 pvec3Sub2)
+        {
+            o_dest.x = pvec3Sub1.x - pvec3Sub2.x;
+            o_dest.y = pvec3Sub1.y - pvec3Sub2.y;
+            o_dest.z = pvec3Sub1.z - pvec3Sub2.z;
+            return;
+        }
+
+        public void Vector3MulAdd(ref TMmdVector3 pvec3Add1, ref TMmdVector3 pvec3Add2, float fRate)
         {
             this.x = pvec3Add1.x + pvec3Add2.x * fRate;
             this.y = pvec3Add1.y + pvec3Add2.y * fRate;
             this.z = pvec3Add1.z + pvec3Add2.z * fRate;
         }
-        public void Vector3Normalize(MmdVector3 pvec3Src)
+        public void Vector3Normalize(ref TMmdVector3 pvec3Src)
         {
             double fSqr = (1.0f / Math.Sqrt(pvec3Src.x * pvec3Src.x + pvec3Src.y * pvec3Src.y + pvec3Src.z * pvec3Src.z));
             this.x = (float)(pvec3Src.x * fSqr);
@@ -85,12 +76,12 @@ namespace jp.nyatla.nymmd.cs.types
         }
 
 
-        public double Vector3DotProduct(MmdVector3 pvec3Src2)
+        public double Vector3DotProduct(ref TMmdVector3 pvec3Src2)
         {
             return (this.x * pvec3Src2.x + this.y * pvec3Src2.y + this.z * pvec3Src2.z);
         }
 
-        public void Vector3CrossProduct(MmdVector3 pvec3Src1, MmdVector3 pvec3Src2)
+        public static void Vector3CrossProduct(out TMmdVector3 o_dest,ref TMmdVector3 pvec3Src1, ref TMmdVector3 pvec3Src2)
         {
             float vx1 = pvec3Src1.x;
             float vy1 = pvec3Src1.y;
@@ -98,42 +89,47 @@ namespace jp.nyatla.nymmd.cs.types
             float vx2 = pvec3Src2.x;
             float vy2 = pvec3Src2.y;
             float vz2 = pvec3Src2.z;
-            this.x = vy1 * vz2 - vz1 * vy2;
-            this.y = vz1 * vx2 - vx1 * vz2;
-            this.z = vx1 * vy2 - vy1 * vx2;
+            o_dest.x = vy1 * vz2 - vz1 * vy2;
+            o_dest.y = vz1 * vx2 - vx1 * vz2;
+            o_dest.z = vx1 * vy2 - vy1 * vx2;
         }
-        public void Vector3Lerp(MmdVector3 pvec3Src1, MmdVector3 pvec3Src2, float fLerpValue)
+        public static void Vector3Lerp(out TMmdVector3 o_dest, ref TMmdVector3 pvec3Src1, ref TMmdVector3 pvec3Src2, float fLerpValue)
         {
             float t0 = 1.0f - fLerpValue;
 
-            this.x = pvec3Src1.x * t0 + pvec3Src2.x * fLerpValue;
-            this.y = pvec3Src1.y * t0 + pvec3Src2.y * fLerpValue;
-            this.z = pvec3Src1.z * t0 + pvec3Src2.z * fLerpValue;
+            o_dest.x = pvec3Src1.x * t0 + pvec3Src2.x * fLerpValue;
+            o_dest.y = pvec3Src1.y * t0 + pvec3Src2.y * fLerpValue;
+            o_dest.z = pvec3Src1.z * t0 + pvec3Src2.z * fLerpValue;
             return;
         }
 
-        public void Vector3Transform(MmdVector3 pVec3In, MmdMatrix matTransform)
+
+        public static void Vector3Transform(out TMmdVector3 o_dest, ref TMmdVector3 pVec3In, MmdMatrix matTransform)
         {
             double vx = pVec3In.x;
             double vy = pVec3In.y;
             double vz = pVec3In.z;
-            this.x = (float)(vx * matTransform.m[0,0] + vy * matTransform.m[1,0] + vz * matTransform.m[2,0] + matTransform.m[3,0]);
-            this.y = (float)(vx * matTransform.m[0,1] + vy * matTransform.m[1,1] + vz * matTransform.m[2,1] + matTransform.m[3,1]);
-            this.z = (float)(vx * matTransform.m[0,2] + vy * matTransform.m[1,2] + vz * matTransform.m[2,2] + matTransform.m[3,2]);
+            o_dest.x = (float)(vx * matTransform.m[0, 0] + vy * matTransform.m[1, 0] + vz * matTransform.m[2, 0] + matTransform.m[3, 0]);
+            o_dest.y = (float)(vx * matTransform.m[0, 1] + vy * matTransform.m[1, 1] + vz * matTransform.m[2, 1] + matTransform.m[3, 1]);
+            o_dest.z = (float)(vx * matTransform.m[0, 2] + vy * matTransform.m[1, 2] + vz * matTransform.m[2, 2] + matTransform.m[3, 2]);
             return;
         }
 
-        public void Vector3Rotate(MmdVector3 pVec3In, MmdMatrix matRotate)
+        public static void Vector3Rotate(out TMmdVector3 o_dest, ref TMmdVector3 pVec3In, MmdMatrix matRotate)
         {
             double vx = pVec3In.x;
             double vy = pVec3In.y;
             double vz = pVec3In.z;
-            this.x = (float)(vx * matRotate.m[0,0] + vy * matRotate.m[1,0] + vz * matRotate.m[2,0]);
-            this.y = (float)(vx * matRotate.m[0,1] + vy * matRotate.m[1,1] + vz * matRotate.m[2,1]);
-            this.z = (float)(vx * matRotate.m[0,2] + vy * matRotate.m[1,2] + vz * matRotate.m[2,2]);
+            o_dest.x = (float)(vx * matRotate.m[0, 0] + vy * matRotate.m[1, 0] + vz * matRotate.m[2, 0]);
+            o_dest.y = (float)(vx * matRotate.m[0, 1] + vy * matRotate.m[1, 1] + vz * matRotate.m[2, 1]);
+            o_dest.z = (float)(vx * matRotate.m[0, 2] + vy * matRotate.m[1, 2] + vz * matRotate.m[2, 2]);
             return;
         }
-        public void QuaternionToEuler(MmdVector4 pvec4Quat)
+        //public void QuaternionToEuler(MmdVector4 pvec4Quat)
+        //{
+        //    QuaternionToEuler(out this, pvec4Quat);
+        //}
+        public static void QuaternionToEuler(out TMmdVector3 o_dest,MmdVector4 pvec4Quat)
         {
             // XYZ軸回転の取得
             // Y回転を求める
@@ -169,22 +165,22 @@ namespace jp.nyatla.nymmd.cs.types
                     double yz2 = pvec4Quat.y * z2;
                     double wx2 = pvec4Quat.w * x2;
                     double yy2 = pvec4Quat.y * y2;
-                    this.x = (float)Math.Atan2(yz2 + wx2, (1.0f - (xx2 + yy2)));
-                    this.y = (float)yRadian;
-                    this.z = (float)Math.Atan2((xy2 + wz2), (1.0f - (yy2 + zz2)));
+                    o_dest.x = (float)Math.Atan2(yz2 + wx2, (1.0f - (xx2 + yy2)));
+                    o_dest.y = (float)yRadian;
+                    o_dest.z = (float)Math.Atan2((xy2 + wz2), (1.0f - (yy2 + zz2)));
                 }
                 else
                 {
-                    this.x = (float)-Math.Atan2((xy2 - wz2), (1.0f - (xx2 + zz2)));
-                    this.y = (float)yRadian;
-                    this.z = 0.0f;
+                    o_dest.x = (float)-Math.Atan2((xy2 - wz2), (1.0f - (xx2 + zz2)));
+                    o_dest.y = (float)yRadian;
+                    o_dest.z = 0.0f;
                 }
             }
             else
             {
-                this.x = (float)Math.Atan2((xy2 - wz2), (1.0f - (xx2 + zz2)));
-                this.y = (float)yRadian;
-                this.z = 0.0f;
+                o_dest.x = (float)Math.Atan2((xy2 - wz2), (1.0f - (xx2 + zz2)));
+                o_dest.y = (float)yRadian;
+                o_dest.z = 0.0f;
             }
         }
     }

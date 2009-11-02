@@ -217,36 +217,36 @@ namespace NyMmdUtils
         {
             MmdPmdModel pmd = this._ref_pmd;
             int number_of_vertex = pmd.getNumberOfVertex();
-            MmdVector3[] org_pos_array = pmd.getPositionArray();
-            MmdVector3[] org_normal_array = pmd.getNormatArray();
+            TMmdVector3[] org_pos_array = pmd.getPositionArray();
+            TMmdVector3[] org_normal_array = pmd.getNormatArray();
             PmdSkinInfo[] org_skin_info = pmd.getSkinInfoArray();
             CustomVertex.PositionNormalTextured[] vertex_array = this._vertex_array;
             // 頂点スキニング
             MmdMatrix matTemp = new MmdMatrix();
-            MmdVector3 position = new MmdVector3();
-            MmdVector3 normal = new MmdVector3();
+            TMmdVector3 position;
+            TMmdVector3 normal;
             for (int i = 0; i < number_of_vertex; i++)
             {
                 PmdSkinInfo si = org_skin_info[i];
                 if (si.fWeight == 0.0f)
                 {
                     MmdMatrix mat = i_skinning_mat[si.unBoneNo[1]];
-                    position.Vector3Transform(org_pos_array[i], mat);
-                    normal.Vector3Rotate(org_normal_array[i], mat);
+                    TMmdVector3.Vector3Transform(out position, ref org_pos_array[i], mat);
+                    TMmdVector3.Vector3Rotate(out normal,ref org_normal_array[i], mat);
                 }
                 else if (si.fWeight >= 0.9999f)
                 {
                     MmdMatrix mat = i_skinning_mat[si.unBoneNo[0]];
-                    position.Vector3Transform(org_pos_array[i], mat);
-                    normal.Vector3Rotate(org_normal_array[i], mat);
+                    TMmdVector3.Vector3Transform(out position, ref org_pos_array[i], mat);
+                    TMmdVector3.Vector3Rotate(out normal, ref org_normal_array[i], mat);
                 }
                 else
                 {
                     MmdMatrix mat0 = i_skinning_mat[si.unBoneNo[0]];
                     MmdMatrix mat1 = i_skinning_mat[si.unBoneNo[1]];
                     matTemp.MatrixLerp(mat0, mat1, si.fWeight);
-                    position.Vector3Transform(org_pos_array[i], matTemp);
-                    normal.Vector3Rotate(org_normal_array[i], matTemp);
+                    TMmdVector3.Vector3Transform(out position, ref org_pos_array[i], matTemp);
+                    TMmdVector3.Vector3Rotate(out normal, ref org_normal_array[i], matTemp);
                 }
                 //ここの転写は少し考える。
                 vertex_array[i].X = position.x;

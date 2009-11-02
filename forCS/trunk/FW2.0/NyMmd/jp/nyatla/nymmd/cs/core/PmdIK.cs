@@ -48,7 +48,6 @@ namespace jp.nyatla.nymmd.cs.core
 
         private PmdBone[] m_ppBoneList;	// IKを構成するボーンの配列
 
-        private MmdVector3[] _work_vector3 = MmdVector3.createArray(4);
         private MmdVector4 _work_vector4 = new MmdVector4();
         public PmdIK(PMD_IK pPMDIKData, PmdBone[] i_ref_bone_array)
         {
@@ -77,10 +76,10 @@ namespace jp.nyatla.nymmd.cs.core
         }
         private void limitAngle(MmdVector4 pvec4Out, MmdVector4 pvec4Src)
         {
-            MmdVector3 vec3Angle = this._work_vector3[0];
+            TMmdVector3 vec3Angle;
 
             // XYZ軸回転の取得
-            vec3Angle.QuaternionToEuler(pvec4Src);
+            TMmdVector3.QuaternionToEuler(out vec3Angle, pvec4Src);
 
             // 角度制限
             if (vec3Angle.x < -Math.PI)
@@ -95,7 +94,7 @@ namespace jp.nyatla.nymmd.cs.core
             vec3Angle.z = 0.0f;
 
             // XYZ軸回転からクォータニオンへ
-            pvec4Out.QuaternionCreateEuler(vec3Angle);
+            pvec4Out.QuaternionCreateEuler(ref vec3Angle);
             return;
         }
 
@@ -103,21 +102,21 @@ namespace jp.nyatla.nymmd.cs.core
         {
             return this.m_nSortVal;
         }
-        private MmdVector3 __update_vec3OrgTargetPos = new MmdVector3();
+        private TMmdVector3 __update_vec3OrgTargetPos;
         private MmdMatrix __update_matInvBone = new MmdMatrix();
         public void update()
         {
-            MmdVector3 vec3OrgTargetPos = this.__update_vec3OrgTargetPos;
+            TMmdVector3 vec3OrgTargetPos;// = this.__update_vec3OrgTargetPos;
             MmdMatrix matInvBone = this.__update_matInvBone;
 
             vec3OrgTargetPos.x = (float)m_pTargetBone.m_matLocal.m[3,0];
             vec3OrgTargetPos.y = (float)m_pTargetBone.m_matLocal.m[3,1];
             vec3OrgTargetPos.z = (float)m_pTargetBone.m_matLocal.m[3,2];
 
-            MmdVector3 vec3EffPos = this._work_vector3[0];
-            MmdVector3 vec3TargetPos = this._work_vector3[1];
-            MmdVector3 vec3Diff = this._work_vector3[2];
-            MmdVector3 vec3RotAxis = this._work_vector3[3];
+            TMmdVector3 vec3EffPos;// = this._work_vector3[0];
+            TMmdVector3 vec3TargetPos;// = this._work_vector3[1];
+            TMmdVector3 vec3Diff;// = this._work_vector3[2];
+            TMmdVector3 vec3RotAxis;// = this._work_vector3[3];
             MmdVector4 vec4RotQuat = this._work_vector4;
 
             for (int i = this.m_ppBoneList.Length - 1; i >= 0; i--)
@@ -139,27 +138,27 @@ namespace jp.nyatla.nymmd.cs.core
                     matInvBone.MatrixInverse(m_ppBoneList[cbLinkIdx].m_matLocal);
 
                     // エフェクタ，到達目標のローカル位置
-                    vec3EffPos.Vector3Transform(vec3EffPos, matInvBone);
-                    vec3TargetPos.Vector3Transform(vec3OrgTargetPos, matInvBone);
+                    TMmdVector3.Vector3Transform(out vec3EffPos, ref vec3EffPos, matInvBone);
+                    TMmdVector3.Vector3Transform(out vec3TargetPos, ref vec3OrgTargetPos, matInvBone);
 
                     // 十分近ければ終了
 
-                    vec3Diff.Vector3Sub(vec3EffPos, vec3TargetPos);
-                    if (vec3Diff.Vector3DotProduct(vec3Diff) < 0.0000001f)
+                    TMmdVector3.Vector3Sub(out vec3Diff, ref vec3EffPos, ref vec3TargetPos);
+                    if (vec3Diff.Vector3DotProduct(ref vec3Diff) < 0.0000001f)
                     {
                         return;
                     }
 
                     // (1) 基準関節→エフェクタ位置への方向ベクトル
-                    vec3EffPos.Vector3Normalize(vec3EffPos);
+                    vec3EffPos.Vector3Normalize(ref vec3EffPos);
 
                     // (2) 基準関節→目標位置への方向ベクトル
-                    vec3TargetPos.Vector3Normalize(vec3TargetPos);
+                    vec3TargetPos.Vector3Normalize(ref vec3TargetPos);
 
                     // ベクトル (1) を (2) に一致させるための最短回転量（Axis-Angle）
                     //
                     // 回転角
-                    double fRotAngle = Math.Acos(vec3EffPos.Vector3DotProduct(vec3TargetPos));
+                    double fRotAngle = Math.Acos(vec3EffPos.Vector3DotProduct(ref vec3TargetPos));
 
                     if (0.00000001 < Math.Abs(fRotAngle))
                     {
@@ -174,16 +173,16 @@ namespace jp.nyatla.nymmd.cs.core
 
                         // 回転軸
 
-                        vec3RotAxis.Vector3CrossProduct(vec3EffPos, vec3TargetPos);
-                        if (vec3RotAxis.Vector3DotProduct(vec3RotAxis) < 0.0000001)
+                        TMmdVector3.Vector3CrossProduct(out vec3RotAxis,ref vec3EffPos,ref vec3TargetPos);
+                        if (vec3RotAxis.Vector3DotProduct(ref vec3RotAxis) < 0.0000001)
                         {
                             continue;
                         }
 
-                        vec3RotAxis.Vector3Normalize(vec3RotAxis);
+                        vec3RotAxis.Vector3Normalize(ref vec3RotAxis);
 
                         // 関節回転量の補正
-                        vec4RotQuat.QuaternionCreateAxis(vec3RotAxis, fRotAngle);
+                        vec4RotQuat.QuaternionCreateAxis(ref vec3RotAxis,fRotAngle);
 
                         if (m_ppBoneList[cbLinkIdx].m_bIKLimitAngle)
                         {

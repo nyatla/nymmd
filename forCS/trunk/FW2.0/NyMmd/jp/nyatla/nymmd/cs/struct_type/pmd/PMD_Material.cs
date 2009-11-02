@@ -10,8 +10,8 @@ namespace jp.nyatla.nymmd.cs.struct_type.pmd
     {
         public MmdColor4 col4Diffuse = new MmdColor4();
         public float fShininess;
-        public MmdColor3 col3Specular = new MmdColor3();
-        public MmdColor3 col3Ambient = new MmdColor3();
+        public TMmdColor3 col3Specular;
+        public TMmdColor3 col3Ambient;
         public int unknown;
         public int ulNumIndices;		// この材質に対応する頂点数
         public String szTextureFileName;	// テクスチャファイル名
@@ -19,8 +19,8 @@ namespace jp.nyatla.nymmd.cs.struct_type.pmd
         {
             StructReader.read(this.col4Diffuse, i_reader);
             this.fShininess = i_reader.readFloat();
-            StructReader.read(this.col3Specular, i_reader);
-            StructReader.read(this.col3Ambient, i_reader);
+            StructReader.read(ref this.col3Specular, i_reader);
+            StructReader.read(ref this.col3Ambient, i_reader);
             this.unknown = i_reader.readUnsignedShort();
             this.ulNumIndices = i_reader.readInt();
             this.szTextureFileName = i_reader.readAscii(20);

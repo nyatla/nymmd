@@ -61,8 +61,8 @@ namespace jp.nyatla.nymmd.cs
         private PmdBone[] m_pBoneArray; // ボーン配列
         private PmdIK[] m_pIKArray;    // IK配列
 
-        private MmdVector3[] _position_array;	// 座標配列	
-        private MmdVector3[] _normal_array;		// 法線配列
+        private TMmdVector3[] _position_array;	// 座標配列	
+        private TMmdVector3[] _normal_array;		// 法線配列
         private MmdTexUV[] _texture_uv;		// テクスチャ座標配列
         private PmdSkinInfo[] _skin_info_array;
         private PmdMaterial[] _materials;		// マテリアル配列
@@ -95,11 +95,11 @@ namespace jp.nyatla.nymmd.cs
         {
             return this._texture_uv;
         }
-        public MmdVector3[] getPositionArray()
+        public TMmdVector3[] getPositionArray()
         {
             return this._position_array;
         }
-        public MmdVector3[] getNormatArray()
+        public TMmdVector3[] getNormatArray()
         {
             return this._normal_array;
         }
@@ -170,8 +170,8 @@ namespace jp.nyatla.nymmd.cs
             }
 
             // 頂点配列をコピー
-            this._position_array = MmdVector3.createArray(this._number_of_vertex);
-            this._normal_array = MmdVector3.createArray(this._number_of_vertex);
+            this._position_array =new TMmdVector3[this._number_of_vertex];
+            this._normal_array = new TMmdVector3[this._number_of_vertex];
             this._texture_uv = MmdTexUV.createArray(this._number_of_vertex);
             this._skin_info_array = new PmdSkinInfo[this._number_of_vertex];
 
@@ -180,9 +180,9 @@ namespace jp.nyatla.nymmd.cs
             {
                 tmp_pmd_vertex.read(reader);
                 
-                _position_array[i].setValue(tmp_pmd_vertex.vec3Pos);
-                _normal_array[i].setValue(tmp_pmd_vertex.vec3Normal);
-                _texture_uv[i].setValue(tmp_pmd_vertex.uvTex);
+                _position_array[i]=tmp_pmd_vertex.vec3Pos;
+                _normal_array[i]=tmp_pmd_vertex.vec3Normal;
+                _texture_uv[i]=tmp_pmd_vertex.uvTex;
 
                 this._skin_info_array[i] = new PmdSkinInfo();
                 this._skin_info_array[i].fWeight = tmp_pmd_vertex.cbWeight / 100.0f;

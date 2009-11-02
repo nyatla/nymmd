@@ -47,7 +47,7 @@ namespace jp.nyatla.nymmd.cs.struct_type
             i_dest.a = i_reader.readFloat();
             return;
         }
-        public static void read(MmdColor3 i_dest, DataReader i_reader)
+        public static void read(ref TMmdColor3 i_dest, DataReader i_reader)
         {
             i_dest.r = i_reader.readFloat();
             i_dest.g = i_reader.readFloat();
@@ -60,7 +60,7 @@ namespace jp.nyatla.nymmd.cs.struct_type
             i_dest.v = i_reader.readFloat();
             return;
         }
-        public static void read(MmdVector3 i_dest, DataReader i_reader)
+        public static void read(ref TMmdVector3 i_dest, DataReader i_reader)
         {
             i_dest.x = i_reader.readFloat();
             i_dest.y = i_reader.readFloat();
