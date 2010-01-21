@@ -186,8 +186,8 @@ namespace jp.nyatla.nymmd.cs
 
                 this._skin_info_array[i] = new PmdSkinInfo();
                 this._skin_info_array[i].fWeight = tmp_pmd_vertex.cbWeight / 100.0f;
-                this._skin_info_array[i].unBoneNo[0] = tmp_pmd_vertex.unBoneNo[0];
-                this._skin_info_array[i].unBoneNo[1] = tmp_pmd_vertex.unBoneNo[1];
+                this._skin_info_array[i].unBoneNo_0 = tmp_pmd_vertex.unBoneNo[0];
+                this._skin_info_array[i].unBoneNo_1 = tmp_pmd_vertex.unBoneNo[1];
             }
             // -----------------------------------------------------
             // 頂点インデックス数取得
@@ -248,7 +248,6 @@ namespace jp.nyatla.nymmd.cs
         {
             int num_of_indeces = i_reader.readInt();
             short[] result = new short[num_of_indeces];
-            result = new short[num_of_indeces];
 
             // 頂点インデックス配列をコピー
             for (int i = 0; i < num_of_indeces; i++)

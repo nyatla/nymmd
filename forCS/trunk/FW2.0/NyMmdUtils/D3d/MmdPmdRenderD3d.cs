@@ -230,21 +230,19 @@ namespace NyMmdUtils
                 PmdSkinInfo si = org_skin_info[i];
                 if (si.fWeight == 0.0f)
                 {
-                    MmdMatrix mat = i_skinning_mat[si.unBoneNo[1]];
+                    MmdMatrix mat = i_skinning_mat[si.unBoneNo_1];
                     position.Vector3Transform(org_pos_array[i], mat);
                     normal.Vector3Rotate(org_normal_array[i], mat);
                 }
                 else if (si.fWeight >= 0.9999f)
                 {
-                    MmdMatrix mat = i_skinning_mat[si.unBoneNo[0]];
+                    MmdMatrix mat = i_skinning_mat[si.unBoneNo_0];
                     position.Vector3Transform(org_pos_array[i], mat);
                     normal.Vector3Rotate(org_normal_array[i], mat);
                 }
                 else
                 {
-                    MmdMatrix mat0 = i_skinning_mat[si.unBoneNo[0]];
-                    MmdMatrix mat1 = i_skinning_mat[si.unBoneNo[1]];
-                    matTemp.MatrixLerp(mat0, mat1, si.fWeight);
+                    matTemp.MatrixLerp(i_skinning_mat[si.unBoneNo_0], i_skinning_mat[si.unBoneNo_1], si.fWeight);
                     position.Vector3Transform(org_pos_array[i], matTemp);
                     normal.Vector3Rotate(org_normal_array[i], matTemp);
                 }
