@@ -175,7 +175,7 @@ namespace NyMmdTest
             this._vmd = new MmdVmdMotion(vmds);
             this._player = new MmdMotionPlayer(this._pmd, this._vmd);
             //player
-            this._render = new MmdPmdRenderD3d(this._device);
+            this._render = new MmdPmdRenderD3dMesh(this._device);
             this._render.setPmd(this._pmd, pmd_io);
             //
             this.animation_start_time = System.Environment.TickCount;
