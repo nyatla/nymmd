@@ -87,7 +87,7 @@ namespace NyMmdUtils
             return ret;
         }
 
-        public D3dTextureData getTexture(String i_filename, IMmdDataIo i_io)
+        public Texture getTexture(String i_filename, IMmdDataIo i_io)
         {
             D3dTextureData ret;
 
@@ -98,7 +98,7 @@ namespace NyMmdUtils
                 if (ret.file_name.Equals(i_filename, StringComparison.CurrentCultureIgnoreCase))
                 {
                     // 読み込み済みのテクスチャを発見
-                    return ret;
+                    return ret.d3d_texture;
                 }
             }
 
@@ -107,7 +107,7 @@ namespace NyMmdUtils
             if (ret != null)
             {
                 this.m_pTextureList.Add(ret);
-                return ret;
+                return ret.d3d_texture;
             }
             return null;// テクスチャ読み込みか作成失敗
 
@@ -123,7 +123,7 @@ namespace NyMmdUtils
 
     class D3dMaterial : IDisposable
     {
-        public D3dTextureData texture;
+        public Texture texture;
         public int ulNumIndices;
         public IndexBuffer index_buf;
         public int unknown;
@@ -150,19 +150,36 @@ namespace NyMmdUtils
             this._device = i_device;
             return;
         }
-        public void Dispose()
+        private void releaseD3dResource()
         {
-            this._vertex_buffer.Dispose();
-            for (int i = 0; i < this._materials.Length; i++)
+            if (this._vertex_buffer != null)
             {
-                this._materials[i].Dispose();
+                this._vertex_buffer.Dispose();
+                this._vertex_buffer = null;
+            }
+            if (this._materials != null)
+            {
+                for (int i = 0; i < this._materials.Length; i++)
+                {
+                    this._materials[i].Dispose();
+                }
+                this._materials = null;
             }
             this._texture_list.Dispose();
         }
+        public void Dispose()
+        {
+            releaseD3dResource();
+        }
 
-
+        /**
+         * DirectX管理下にあるPMDデータを作成します。
+         * このAPIは低速系です。
+         **/
         public void setPmd(MmdPmdModel i_pmd, IMmdDataIo i_io)
         {
+            releaseD3dResource();
+            
             this._ref_pmd = i_pmd;
             int number_of_vertex = i_pmd.getNumberOfVertex();
             this._vertex_array = new CustomVertex.PositionNormalTextured[number_of_vertex];
@@ -181,10 +198,14 @@ namespace NyMmdUtils
             List<D3dMaterial> d3d_materials = new List<D3dMaterial>();
             for (int i = 0; i < m.Length; i++)
             {
-                int number_of_indices = m[i].indices.Length;
+                short[] indics_array=i_pmd.getIndicsArray();
                 D3dMaterial new_material = new D3dMaterial();
-                new_material.index_buf = new IndexBuffer(this._device, number_of_indices * 3 * 2, Usage.WriteOnly, Pool.Managed, true);
-                new_material.index_buf.SetData(m[i].indices, 0, 0);
+                //indics配列の分解
+                short[] tmp_indics = new short[m[i].number_of_indics];
+                System.Array.Copy(indics_array, m[i].start_of_indics, tmp_indics,0, tmp_indics.Length);
+                new_material.index_buf = new IndexBuffer(this._device, tmp_indics.Length*sizeof(short), Usage.WriteOnly, Pool.Managed, true);
+                new_material.index_buf.SetData(tmp_indics, 0, 0);
+
 
                 new_material.material.DiffuseColor = new ColorValue(m[i].col4Diffuse.r, m[i].col4Diffuse.g, m[i].col4Diffuse.b, m[i].col4Diffuse.a);
                 new_material.material.AmbientColor = new ColorValue(m[i].col4Ambient.r, m[i].col4Ambient.g, m[i].col4Ambient.b, m[i].col4Ambient.a);
@@ -199,7 +220,7 @@ namespace NyMmdUtils
                     new_material.texture = null;
                 }
                 new_material.unknown = m[i].unknown;
-                new_material.ulNumIndices = number_of_indices;
+                new_material.ulNumIndices = tmp_indics.Length;
                 d3d_materials.Add(new_material);
             }
             this._materials = d3d_materials.ToArray();
@@ -278,30 +299,11 @@ namespace NyMmdUtils
                 {
                     dev.RenderState.CullMode = Cull.CounterClockwise;
                 }
-                /*                if ((0x0f & material[i].unknown) == 0x02)
-                                {
-                                    dev.RenderState.CullMode = Cull.None;
-                                }
-                                else
-                                {
-                                    dev.RenderState.CullMode = Cull.CounterClockwise;
-                                }*/
-                /*
-                if (material[i].material.DiffuseColor.Alpha < 1.0f && material[i].texture == null)
-                {
-                    dev.RenderState.CullMode = Cull.None;
-                }
-                else
-                {
-                    dev.RenderState.CullMode = Cull.CounterClockwise;
-                }
-                */
-
 
                 dev.Material = material[i].material;
                 if (material[i].texture != null)
                 {
-                    dev.SetTexture(0, material[i].texture.d3d_texture);
+                    dev.SetTexture(0, material[i].texture);
                 }
                 else
                 {

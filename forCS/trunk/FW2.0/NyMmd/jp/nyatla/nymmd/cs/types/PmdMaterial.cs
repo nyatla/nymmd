@@ -43,6 +43,10 @@ namespace jp.nyatla.nymmd.cs.types
         public float fShininess;
         public String texture_name;
         public int unknown;
-        public short[] indices;
+        public int number_of_indics;
+        public int start_of_indics;
+
+
+//        public short[] indices;
     };
 }

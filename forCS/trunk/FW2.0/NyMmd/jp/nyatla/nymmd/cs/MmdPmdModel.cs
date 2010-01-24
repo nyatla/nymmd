@@ -66,6 +66,7 @@ namespace jp.nyatla.nymmd.cs
         private MmdTexUV[] _texture_uv;		// テクスチャ座標配列
         private PmdSkinInfo[] _skin_info_array;
         private PmdMaterial[] _materials;		// マテリアル配列
+        private short[] _indices_array;
 
         public MmdPmdModel(Stream i_stream)
         {
@@ -119,7 +120,10 @@ namespace jp.nyatla.nymmd.cs
         {
             return this.m_pIKArray;
         }
-
+        public short[] getIndicsArray()
+        {
+            return this._indices_array;
+        }
 
         public PmdBone getBoneByName(String i_name)
         {
@@ -191,7 +195,7 @@ namespace jp.nyatla.nymmd.cs
             }
             // -----------------------------------------------------
             // 頂点インデックス数取得
-            short[] indices_array = createIndicesArray(reader);
+            this._indices_array = createIndicesArray(reader);
 
 
             // -----------------------------------------------------
@@ -211,8 +215,8 @@ namespace jp.nyatla.nymmd.cs
                 this._materials[i] = new PmdMaterial();
                 this._materials[i].unknown = tmp_pmd_material.unknown;
 
-                this._materials[i].indices = new short[tmp_pmd_material.ulNumIndices];
-                System.Array.Copy(indices_array, indices_ptr, this._materials[i].indices, 0, tmp_pmd_material.ulNumIndices);
+                this._materials[i].start_of_indics =indices_ptr;
+                this._materials[i].number_of_indics=tmp_pmd_material.ulNumIndices;
                 indices_ptr += tmp_pmd_material.ulNumIndices;
 
                 this._materials[i].col4Diffuse.setValue(tmp_pmd_material.col4Diffuse);
