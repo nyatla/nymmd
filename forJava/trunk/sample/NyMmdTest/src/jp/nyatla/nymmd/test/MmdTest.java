@@ -67,7 +67,7 @@ public class MmdTest implements GLEventListener
 		});	
 		
 		//PMDとVMDを取得
-		FileDialog fd;
+/*		FileDialog fd;
 
 		fd=new FileDialog(frame, "Select PMD file" , FileDialog.LOAD);
 		fd.setVisible(true);
@@ -88,7 +88,9 @@ public class MmdTest implements GLEventListener
 			frame.dispose();
 			return;
 		}
-		
+*/		
+		String vmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\Motion\\hannyasinkyo.vmd";
+		String pmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\model\\初音ミクVer2.pmd";
 		//PMD
 		FileInputStream fs = new FileInputStream(pmd_file);
 		this._pmd = new MmdPmdModel(fs);
@@ -177,7 +179,7 @@ public class MmdTest implements GLEventListener
 	public void display(GLAutoDrawable drawable)
 	{
 		long iTime = System.currentTimeMillis() - this.animation_start_time;
-		float fDiffTime = (float) (iTime - prev_time) * (1.0f / 30.0f);
+		float fDiffTime = (float) (iTime - prev_time) * 30 / 1000.0f;
 		prev_time = iTime;
 		try {
 			this._player.updateMotion(fDiffTime);

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="C:/Documents and Settings/atla/デスクトップ/processing-1.0.1/libraries/opengl/library/gluegen-rt.jar" kind="lib"/>
-	<classpathentry path="C:/Documents and Settings/atla/デスクトップ/processing-1.0.1/libraries/opengl/library/jogl.jar" kind="lib"/>
-	<classpathentry path="/NyMmd" combineaccessrules="false" kind="src"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyMmd"/>
+	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/jogl.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

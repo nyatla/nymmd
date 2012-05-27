@@ -51,6 +51,35 @@ public class MmdMotionPlayer
 
 	private PmdBone m_pNeckBone;		// 首のボーン
 
+	/**
+	 * @author やねうらお
+	 * @param pKeyFrames
+	 * @param fFrame
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	private static int findByBinarySearch(BoneKeyFrame[] pKeyFrames,float fFrame, int start, int end) {
+		int diff = end - start;
+		if (diff < 8) {
+			// ある程度小さくなったら逐次サーチ。このな かに見つかるはずなんだ。
+			for (int i = start; i < end; i++) {
+				if (fFrame < pKeyFrames[i].fFrameNo) {
+					return i;
+				}
+			}
+			return end;
+		}
+
+		// 再帰的に調べる
+		int mid = (start + end) / 2;
+		if (fFrame < pKeyFrames[mid].fFrameNo){
+			return findByBinarySearch(pKeyFrames, fFrame, start, mid);
+		}
+		else{
+			return findByBinarySearch(pKeyFrames, fFrame, mid, end);
+		}
+	}	
 
 	private void getMotionPosRot(MotionData pMotionData, float fFrame, MmdVector3 pvec3Pos, MmdVector4 pvec4Rot)
 	{
@@ -62,19 +91,19 @@ public class MmdMotionPlayer
 		{
 			fFrame = pMotionData.pKeyFrames[ulNumKeyFrame - 1].fFrameNo;
 		}
-
-		// 現在の時間がどのキー近辺にあるか
-		for( i = 0 ; i < ulNumKeyFrame ; i++ )
-		{
-			if( fFrame <= pMotionData.pKeyFrames[i].fFrameNo )
-			{
-				break;
-			}
-		}
+		
+		i=findByBinarySearch(pMotionData.pKeyFrames,fFrame,0,ulNumKeyFrame-1);
+//		// 現在の時間がどのキー近辺にあるか
+//		for( i = 0 ; i < ulNumKeyFrame ; i++ )
+//		{
+//			if( fFrame <= pMotionData.pKeyFrames[i].fFrameNo )
+//			{
+//				break;
+//			}
+//		}
 
 		// 前後のキーを設定
-		int	lKey0,
-				lKey1;
+		int	lKey0,lKey1;
 
 		lKey0 = i - 1;
 		lKey1 = i;
@@ -272,6 +301,10 @@ public class MmdMotionPlayer
 		return;
 	}
 
+	/**
+	 * @param fElapsedFrame
+	 * @throws MmdException
+	 */
 	public void updateMotion( float fElapsedFrame ) throws MmdException
 	{
 		final MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();

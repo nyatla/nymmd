@@ -36,6 +36,13 @@ package jp.nyatla.nymmd.types;
 public class MmdVector3
 {
 	public float x, y, z;
+	public MmdVector3()
+	{
+	}
+	public MmdVector3(float ix,float iy,float iz)
+	{
+		this.x=ix;this.y=iy;this.z=iz;
+	}
 	public static MmdVector3[] createArray(int i_length)
 	{
 		MmdVector3[] ret=new MmdVector3[i_length];

@@ -72,7 +72,11 @@ public class PmdBone
 		if( pPMDBoneData.nParentNo != -1 )
 		{
 			this._parent_bone = pBoneArray[pPMDBoneData.nParentNo];
-			m_vec3Offset.Vector3Sub(this._pmd_bone_position,this._parent_bone._pmd_bone_position);
+			if (this._parent_bone != null){
+				m_vec3Offset.Vector3Sub(this._pmd_bone_position,this._parent_bone._pmd_bone_position);
+			}else{
+				m_vec3Offset.Vector3Sub(this._pmd_bone_position,new MmdVector3(0,1,0));
+			}
 		}else{
 			// 親なし
 			this._parent_bone=null;
