@@ -121,9 +121,9 @@ public class MmdVector3
 		final double vx=pVec3In.x;
 		final double vy=pVec3In.y;
 		final double vz=pVec3In.z;
-		this.x =(float)(vx * matTransform.m[0][0] + vy * matTransform.m[1][0] + vz * matTransform.m[2][0] + matTransform.m[3][0]);
-		this.y =(float)(vx * matTransform.m[0][1] + vy * matTransform.m[1][1] + vz * matTransform.m[2][1] + matTransform.m[3][1]);
-		this.z =(float)(vx * matTransform.m[0][2] + vy * matTransform.m[1][2] + vz * matTransform.m[2][2] + matTransform.m[3][2]);
+		this.x =(float)(vx * matTransform.m00 + vy * matTransform.m10 + vz * matTransform.m20 + matTransform.m30);
+		this.y =(float)(vx * matTransform.m01 + vy * matTransform.m11 + vz * matTransform.m21 + matTransform.m31);
+		this.z =(float)(vx * matTransform.m02 + vy * matTransform.m12 + vz * matTransform.m22 + matTransform.m32);
 		return;
 	}
 
@@ -132,9 +132,9 @@ public class MmdVector3
 		final double vx=pVec3In.x;
 		final double vy=pVec3In.y;
 		final double vz=pVec3In.z;		
-		this.x =(float)(vx * matRotate.m[0][0] + vy * matRotate.m[1][0] + vz * matRotate.m[2][0]);
-		this.y =(float)(vx * matRotate.m[0][1] + vy * matRotate.m[1][1] + vz * matRotate.m[2][1]);
-		this.z =(float)(vx * matRotate.m[0][2] + vy * matRotate.m[1][2] + vz * matRotate.m[2][2]);
+		this.x =(float)(vx * matRotate.m00 + vy * matRotate.m10 + vz * matRotate.m20);
+		this.y =(float)(vx * matRotate.m01 + vy * matRotate.m11 + vz * matRotate.m21);
+		this.z =(float)(vx * matRotate.m02 + vy * matRotate.m12 + vz * matRotate.m22);
 		return;
 	}
 	public void QuaternionToEuler(MmdVector4 pvec4Quat )

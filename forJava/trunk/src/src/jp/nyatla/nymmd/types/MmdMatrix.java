@@ -31,10 +31,12 @@
  */
 package jp.nyatla.nymmd.types;
 
-public class MmdMatrix
+import jp.nyatla.nyartoolkit.NyARDoubleMatrix44;
+
+public class MmdMatrix extends NyARDoubleMatrix44
 {
 	//NyARToolkitと統合かな。
-	public final double[][] m=new double[4][4];
+//	public final double[][] m=new double[4][4];
 	public static MmdMatrix[] createArray(int i_length)
 	{
 		MmdMatrix[] ret=new MmdMatrix[i_length];
@@ -44,35 +46,35 @@ public class MmdMatrix
 		}
 		return ret;
 	}
-	public void MatrixIdentity()
-	{
-		this.m[0][1] = this.m[0][2] = this.m[0][3] =this.m[1][0] = this.m[1][2] = this.m[1][3] =this.m[2][0] = this.m[2][1] = this.m[2][3] =this.m[3][0] = this.m[3][1] = this.m[3][2] = 0.0f;
-		this.m[0][0] = this.m[1][1] = this.m[2][2] = this.m[3][3] = 1.0f;
-		return;
-	}
-	private final double[][] _array_temp=new double[4][4];
-	public void MatrixMultiply(MmdMatrix matSrc1,MmdMatrix matSrc2 )
-	{
-		final double[][] matTemp=this._array_temp;
-		int		i;
-		
-		for( i = 0 ; i < 4 ; i++ )
-		{
-			matTemp[i][0] =	matSrc1.m[i][0] * matSrc2.m[0][0] + matSrc1.m[i][1] * matSrc2.m[1][0] + matSrc1.m[i][2] * matSrc2.m[2][0] + matSrc1.m[i][3] * matSrc2.m[3][0];
-			matTemp[i][1] =	matSrc1.m[i][0] * matSrc2.m[0][1] + matSrc1.m[i][1] * matSrc2.m[1][1] + matSrc1.m[i][2] * matSrc2.m[2][1] + matSrc1.m[i][3] * matSrc2.m[3][1];
-			matTemp[i][2] =	matSrc1.m[i][0] * matSrc2.m[0][2] + matSrc1.m[i][1] * matSrc2.m[1][2] + matSrc1.m[i][2] * matSrc2.m[2][2] + matSrc1.m[i][3] * matSrc2.m[3][2];
-			matTemp[i][3] =	matSrc1.m[i][0] * matSrc2.m[0][3] + matSrc1.m[i][1] * matSrc2.m[1][3] + matSrc1.m[i][2] * matSrc2.m[2][3] + matSrc1.m[i][3] * matSrc2.m[3][3];
-		}
-
-		for( i = 0 ; i < 4 ; i++ )
-		{
-			this.m[i][0] = matTemp[i][0];
-			this.m[i][1] = matTemp[i][1];
-			this.m[i][2] = matTemp[i][2];
-			this.m[i][3] = matTemp[i][3];
-		}
-	}
-
+//	public void MatrixIdentity()
+//	{
+//		this.m[0][1] = this.m[0][2] = this.m[0][3] =this.m[1][0] = this.m[1][2] = this.m[1][3] =this.m[2][0] = this.m[2][1] = this.m[2][3] =this.m[3][0] = this.m[3][1] = this.m[3][2] = 0.0f;
+//		this.m[0][0] = this.m[1][1] = this.m[2][2] = this.m[3][3] = 1.0f;
+//		return;
+//	}
+//	private final double[][] _array_temp=new double[4][4];
+//	public void MatrixMultiply(MmdMatrix matSrc1,MmdMatrix matSrc2 )
+//	{
+//		final double[][] matTemp=this._array_temp;
+//		int		i;
+//		
+//		for( i = 0 ; i < 4 ; i++ )
+//		{
+//			matTemp[i][0] =	matSrc1.m[i][0] * matSrc2.m[0][0] + matSrc1.m[i][1] * matSrc2.m[1][0] + matSrc1.m[i][2] * matSrc2.m[2][0] + matSrc1.m[i][3] * matSrc2.m[3][0];
+//			matTemp[i][1] =	matSrc1.m[i][0] * matSrc2.m[0][1] + matSrc1.m[i][1] * matSrc2.m[1][1] + matSrc1.m[i][2] * matSrc2.m[2][1] + matSrc1.m[i][3] * matSrc2.m[3][1];
+//			matTemp[i][2] =	matSrc1.m[i][0] * matSrc2.m[0][2] + matSrc1.m[i][1] * matSrc2.m[1][2] + matSrc1.m[i][2] * matSrc2.m[2][2] + matSrc1.m[i][3] * matSrc2.m[3][2];
+//			matTemp[i][3] =	matSrc1.m[i][0] * matSrc2.m[0][3] + matSrc1.m[i][1] * matSrc2.m[1][3] + matSrc1.m[i][2] * matSrc2.m[2][3] + matSrc1.m[i][3] * matSrc2.m[3][3];
+//		}
+//
+//		for( i = 0 ; i < 4 ; i++ )
+//		{
+//			this.m[i][0] = matTemp[i][0];
+//			this.m[i][1] = matTemp[i][1];
+//			this.m[i][2] = matTemp[i][2];
+//			this.m[i][3] = matTemp[i][3];
+//		}
+//	}
+/*
 	public void MatrixInverse(MmdMatrix matSrc)
 	{
 		final double[][] matTemp=this._array_temp;
@@ -81,7 +83,7 @@ public class MmdMatrix
 				matTemp[i][i2]=matSrc.m[i][i2];
 			}
 		}
-		this.MatrixIdentity();
+		this.identity();
 
 		//掃き出し法
 		for( int i = 0 ; i < 4 ; i++ )
@@ -107,19 +109,26 @@ public class MmdMatrix
 		}
 		return;
 	}
-
-	public void MatrixLerp(MmdMatrix matSrc1, MmdMatrix matSrc2, float fLerpValue )
+*/
+	public void MatrixLerp(MmdMatrix sm1, MmdMatrix sm2, float fLerpValue )
 	{
-		double[][] sm1=matSrc1.m;
-		double[][] sm2=matSrc2.m;
-		double[][] dm=this.m;
 		double fT = 1.0 - fLerpValue;
-		for(int i=0;i<4;i++){
-			dm[i][0] = sm1[i][0] * fLerpValue + sm2[i][0] * fT;
-			dm[i][1] = sm1[i][1] * fLerpValue + sm2[i][1] * fT;
-			dm[i][2] = sm1[i][2] * fLerpValue + sm2[i][2] * fT;
-			dm[i][3] = sm1[i][3] * fLerpValue + sm2[i][3] * fT;
-		}
+		this.m00 = sm1.m00 * fLerpValue + sm2.m00 * fT;
+		this.m01 = sm1.m01 * fLerpValue + sm2.m01 * fT;
+		this.m02 = sm1.m02 * fLerpValue + sm2.m02 * fT;
+		this.m03 = sm1.m03 * fLerpValue + sm2.m03 * fT;
+		this.m10 = sm1.m10 * fLerpValue + sm2.m10 * fT;
+		this.m11 = sm1.m11 * fLerpValue + sm2.m11 * fT;
+		this.m12 = sm1.m12 * fLerpValue + sm2.m12 * fT;
+		this.m13 = sm1.m13 * fLerpValue + sm2.m13 * fT;
+		this.m20 = sm1.m20 * fLerpValue + sm2.m20 * fT;
+		this.m21 = sm1.m21 * fLerpValue + sm2.m21 * fT;
+		this.m22 = sm1.m22 * fLerpValue + sm2.m22 * fT;
+		this.m23 = sm1.m23 * fLerpValue + sm2.m23 * fT;
+		this.m30 = sm1.m30 * fLerpValue + sm2.m30 * fT;
+		this.m31 = sm1.m31 * fLerpValue + sm2.m31 * fT;
+		this.m32 = sm1.m32 * fLerpValue + sm2.m32 * fT;
+		this.m33 = sm1.m33 * fLerpValue + sm2.m33 * fT;
 		return;
 	}
 	public void QuaternionToMatrix(MmdVector4 pvec4Quat)
@@ -134,19 +143,18 @@ public class MmdMatrix
 		double	yw = pvec4Quat.y * pvec4Quat.w * 2.0f;
 		double	zw = pvec4Quat.z * pvec4Quat.w * 2.0f;
 
-		final double[][] mt=this.m;
-		mt[0][0] = 1.0f - y2 - z2;
-		mt[0][1] = xy + zw;
-		mt[0][2] = zx - yw;
-		mt[1][0] = xy - zw;
-		mt[1][1] = 1.0f - z2 - x2;
-		mt[1][2] = yz + xw;
-		mt[2][0] = zx + yw;
-		mt[2][1] = yz - xw;
-		mt[2][2] = 1.0f - x2 - y2;
+		this.m00 = 1.0f - y2 - z2;
+		this.m01 = xy + zw;
+		this.m02 = zx - yw;
+		this.m10 = xy - zw;
+		this.m11 = 1.0f - z2 - x2;
+		this.m12 = yz + xw;
+		this.m20 = zx + yw;
+		this.m21 = yz - xw;
+		this.m22 = 1.0f - x2 - y2;
 
-		mt[0][3] = mt[1][3] = mt[2][3] = mt[3][0] = mt[3][1] = mt[3][2] = 0.0f;
-		mt[3][3] = 1.0f;
+		this.m03 = this.m13 = this.m23 = this.m30 = this.m31 = this.m32 = 0.0f;
+		this.m33 = 1.0f;
 		return;
 	}
 

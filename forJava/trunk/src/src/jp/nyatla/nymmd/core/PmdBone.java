@@ -89,10 +89,10 @@ public class PmdBone
 			this.m_pChildBone =pBoneArray[pPMDBoneData.nChildNo];
 		}
 
-		this.m_matInvTransform.MatrixIdentity();
-		this.m_matInvTransform.m[3][0] = -this._pmd_bone_position.x; 
-		this.m_matInvTransform.m[3][1] = -this._pmd_bone_position.y; 
-		this.m_matInvTransform.m[3][2] = -this._pmd_bone_position.z; 
+		this.m_matInvTransform.identity();
+		this.m_matInvTransform.m30 = -this._pmd_bone_position.x; 
+		this.m_matInvTransform.m31 = -this._pmd_bone_position.y; 
+		this.m_matInvTransform.m32 = -this._pmd_bone_position.z; 
 
 		this.m_bIKLimitAngle = false;
 
@@ -112,10 +112,10 @@ public class PmdBone
 		m_vec3Position.x = m_vec3Position.y = m_vec3Position.z = 0.0f;
 		m_vec4Rotate.x = m_vec4Rotate.y = m_vec4Rotate.z = 0.0f; m_vec4Rotate.w = 1.0f;
 
-		this.m_matLocal.MatrixIdentity();
-		this.m_matLocal.m[3][0] = _pmd_bone_position.x; 
-		this.m_matLocal.m[3][1] = _pmd_bone_position.y; 
-		this.m_matLocal.m[3][2] = _pmd_bone_position.z; 		
+		this.m_matLocal.identity();
+		this.m_matLocal.m30 = _pmd_bone_position.x; 
+		this.m_matLocal.m31 = _pmd_bone_position.y; 
+		this.m_matLocal.m32 = _pmd_bone_position.z; 		
 	}
 	public void setIKLimitAngle(boolean i_value)
 	{
@@ -126,53 +126,60 @@ public class PmdBone
 	
 	public void updateSkinningMat(MmdMatrix o_matrix)
 	{
-		o_matrix.MatrixMultiply(this.m_matInvTransform,this.m_matLocal);		
+		o_matrix.mul(this.m_matInvTransform,this.m_matLocal);		
 		return;
 	}
-	public 	void updateMatrix()
+	
+	public void updateMatrix()
 	{
-		// クォータニオンと移動値からボーンのローカルマトリックスを作成
-		this.m_matLocal.QuaternionToMatrix(this.m_vec4Rotate );
-		this.m_matLocal.m[3][0] = m_vec3Position.x + m_vec3Offset.x; 
-		this.m_matLocal.m[3][1] = m_vec3Position.y + m_vec3Offset.y; 
-		this.m_matLocal.m[3][2] = m_vec3Position.z + m_vec3Offset.z; 
-
-		// 親があるなら親の回転を受け継ぐ
 		if(this._parent_bone!=null){
-			m_matLocal.MatrixMultiply(m_matLocal,this._parent_bone.m_matLocal);
-		}
+			// クォータニオンと移動値からボーンのローカルマトリックスを作成
+			this._mat_tmp1.QuaternionToMatrix(this.m_vec4Rotate );
+			this._mat_tmp1.m30 = m_vec3Position.x + m_vec3Offset.x; 
+			this._mat_tmp1.m31 = m_vec3Position.y + m_vec3Offset.y; 
+			this._mat_tmp1.m32 = m_vec3Position.z + m_vec3Offset.z; 
+			// 親があるなら親の回転を受け継ぐ
+			m_matLocal.mul(this._mat_tmp1,this._parent_bone.m_matLocal);
+		}else{
+			// クォータニオンと移動値からボーンのローカルマトリックスを作成
+			this.m_matLocal.QuaternionToMatrix(this.m_vec4Rotate );
+			this.m_matLocal.m30 = m_vec3Position.x + m_vec3Offset.x; 
+			this.m_matLocal.m31 = m_vec3Position.y + m_vec3Offset.y; 
+			this.m_matLocal.m32 = m_vec3Position.z + m_vec3Offset.z; 
+		}		
 		return;
 	}
-	private final MmdMatrix _lookAt_matTemp=new MmdMatrix();
-	private final MmdMatrix _lookAt_matInvTemp=new MmdMatrix();
+	private final MmdMatrix _mat_tmp1=new MmdMatrix();
+	private final MmdMatrix _mat_tmp2=new MmdMatrix();
+	private final MmdMatrix _mat_tmp3=new MmdMatrix();
 	private final MmdVector3 _lookAt_vec3LocalTgtPosZY=new MmdVector3();
 	private final MmdVector3 _lookAt_vec3LocalTgtPosXZ=new MmdVector3();
 	private final MmdVector3 _lookAt_vec3Angle=new MmdVector3();
 	
 	
-	
 	public 	void lookAt(MmdVector3 pvecTargetPos )
 	{
 		// どうもおかしいので要調整
-		final MmdMatrix matTemp=this._lookAt_matTemp;
-		final MmdMatrix matInvTemp=this._lookAt_matInvTemp;
+		final MmdMatrix mat_tmp1=this._mat_tmp1;
+		final MmdMatrix mat_tmp3=this._mat_tmp3;
 		final MmdVector3		vec3LocalTgtPosZY=this._lookAt_vec3LocalTgtPosZY;
 		final MmdVector3		vec3LocalTgtPosXZ=this._lookAt_vec3LocalTgtPosXZ;
 
-		matTemp.MatrixIdentity();
-		matTemp.m[3][0] = m_vec3Position.x + m_vec3Offset.x; 
-		matTemp.m[3][1] = m_vec3Position.y + m_vec3Offset.y; 
-		matTemp.m[3][2] = m_vec3Position.z + m_vec3Offset.z;
+		mat_tmp1.identity();
+		mat_tmp1.m30 = m_vec3Position.x + m_vec3Offset.x; 
+		mat_tmp1.m31 = m_vec3Position.y + m_vec3Offset.y; 
+		mat_tmp1.m32 = m_vec3Position.z + m_vec3Offset.z;
 
 		if(this._parent_bone!=null)
 		{
-			matInvTemp.MatrixInverse(_parent_bone.m_matLocal );
-			matTemp.MatrixMultiply(matTemp, matInvTemp );
+			mat_tmp3.inverse(_parent_bone.m_matLocal );
+			this._mat_tmp2.mul(mat_tmp1, mat_tmp3 );
+			mat_tmp3.inverse(this._mat_tmp2);
+			vec3LocalTgtPosZY.Vector3Transform(pvecTargetPos, mat_tmp3 );
+		}else{
+			mat_tmp1.inverse(mat_tmp1);
+			vec3LocalTgtPosZY.Vector3Transform(pvecTargetPos, mat_tmp1 );
 		}
-		matTemp.MatrixInverse(matTemp);
-
-
-		vec3LocalTgtPosZY.Vector3Transform(pvecTargetPos, matTemp );
 
 		vec3LocalTgtPosXZ.setValue(vec3LocalTgtPosZY);
 		vec3LocalTgtPosXZ.y = 0.0f;

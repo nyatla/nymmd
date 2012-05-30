@@ -40,7 +40,7 @@ public class PmdIK
 	private PmdBone m_pEffBone;	// IK先端ボーン
 
 	private int m_unCount;
-	private double m_fFact;
+	private double _fact;
 	private int m_nSortVal;
 
 	private PmdBone[] m_ppBoneList;	// IKを構成するボーンの配列
@@ -56,7 +56,7 @@ public class PmdIK
 		this.m_pEffBone =i_ref_bone_array[pPMDIKData.nEffNo];
 
 		this.m_unCount = pPMDIKData.unCount;
-		this.m_fFact =pPMDIKData.fFact * Math.PI;
+		this._fact =pPMDIKData.fFact * Math.PI;
 		this.m_nSortVal = pPMDIKData.punLinkNo[0];
 
 		// IKリンク配列の作成
@@ -105,9 +105,9 @@ public class PmdIK
 		final MmdVector3 vec3OrgTargetPos=this.__update_vec3OrgTargetPos;
 		final MmdMatrix matInvBone=this.__update_matInvBone;
 
-		vec3OrgTargetPos.x = (float)m_pTargetBone.m_matLocal.m[3][0];
-		vec3OrgTargetPos.y = (float)m_pTargetBone.m_matLocal.m[3][1];
-		vec3OrgTargetPos.z = (float)m_pTargetBone.m_matLocal.m[3][2];
+		vec3OrgTargetPos.x = (float)m_pTargetBone.m_matLocal.m30;
+		vec3OrgTargetPos.y = (float)m_pTargetBone.m_matLocal.m31;
+		vec3OrgTargetPos.z = (float)m_pTargetBone.m_matLocal.m32;
 
 		final MmdVector3 vec3EffPos=this._work_vector3[0];
 		final MmdVector3 vec3TargetPos=this._work_vector3[1];
@@ -122,15 +122,15 @@ public class PmdIK
 
 		for(int it = 0 ; it < m_unCount ; it++ )
 		{
-			for(int cbLinkIdx = 0 ; cbLinkIdx < this.m_ppBoneList.length ; cbLinkIdx++ )
+			for(int j = 0 ; j < this.m_ppBoneList.length ; j++ )
 			{
 				// エフェクタの位置の取得
-				vec3EffPos.x = (float)m_pEffBone.m_matLocal.m[3][0];
-				vec3EffPos.y = (float)m_pEffBone.m_matLocal.m[3][1];
-				vec3EffPos.z = (float)m_pEffBone.m_matLocal.m[3][2];
+				vec3EffPos.x = (float)m_pEffBone.m_matLocal.m30;
+				vec3EffPos.y = (float)m_pEffBone.m_matLocal.m31;
+				vec3EffPos.z = (float)m_pEffBone.m_matLocal.m32;
 
 				// ワールド座標系から注目ノードの局所(ローカル)座標系への変換
-				matInvBone.MatrixInverse(m_ppBoneList[cbLinkIdx].m_matLocal );
+				matInvBone.inverse(m_ppBoneList[j].m_matLocal );
 
 				// エフェクタ，到達目標のローカル位置
 				vec3EffPos.Vector3Transform(vec3EffPos, matInvBone );
@@ -156,10 +156,10 @@ public class PmdIK
 
 				if( 0.00000001 < Math.abs( fRotAngle))
 				{
-					if( fRotAngle < -m_fFact ){
-						fRotAngle = -m_fFact;
-					}else if( m_fFact < fRotAngle ){
-						fRotAngle = m_fFact;
+					if( fRotAngle < -this._fact ){
+						fRotAngle = -this._fact;
+					}else if( this._fact < fRotAngle ){
+						fRotAngle = this._fact;
 					}
 
 					// 回転軸
@@ -174,16 +174,16 @@ public class PmdIK
 					// 関節回転量の補正
 					vec4RotQuat.QuaternionCreateAxis(vec3RotAxis,fRotAngle);
 
-					if( m_ppBoneList[cbLinkIdx].m_bIKLimitAngle){
+					if( m_ppBoneList[j].m_bIKLimitAngle){
 						limitAngle(vec4RotQuat,vec4RotQuat );
 					}
 
 					vec4RotQuat.QuaternionNormalize(vec4RotQuat);
 
-					m_ppBoneList[cbLinkIdx].m_vec4Rotate.QuaternionMultiply(m_ppBoneList[cbLinkIdx].m_vec4Rotate,vec4RotQuat);
-					m_ppBoneList[cbLinkIdx].m_vec4Rotate.QuaternionNormalize(m_ppBoneList[cbLinkIdx].m_vec4Rotate);
+					m_ppBoneList[j].m_vec4Rotate.QuaternionMultiply(m_ppBoneList[j].m_vec4Rotate,vec4RotQuat);
+					m_ppBoneList[j].m_vec4Rotate.QuaternionNormalize(m_ppBoneList[j].m_vec4Rotate);
 
-					for(int i = cbLinkIdx ; i >= 0 ; i-- ){
+					for(int i = j ; i >= 0 ; i-- ){
 						m_ppBoneList[i].updateMatrix();
 					}
 					m_pEffBone.updateMatrix();

@@ -70,7 +70,7 @@ public class MmdVmdMotion
 {
 	private MotionData[] _motion_data_array;	// ボーンごとのキーフレームデータのリスト
 	private FaceData[] _face_data_array;	// 表情ごとのキーフレームデータのリスト
-	private float m_fMaxFrame;		// 最後のフレーム番号
+	private float _fMaxFrame;		// 最後のフレーム番号
 
 	public MmdVmdMotion(InputStream i_stream) throws MmdException
 	{
@@ -89,7 +89,7 @@ public class MmdVmdMotion
 
 	public float getMaxFrame()
 	{
-		return this.m_fMaxFrame;
+		return this._fMaxFrame;
 	}
 	
 
@@ -108,11 +108,11 @@ public class MmdVmdMotion
 		//ボーンと最大フレームを取得
 		float[] max_frame=new float[1];
 		this._motion_data_array=createMotionDataList(reader,max_frame);
-		this.m_fMaxFrame=max_frame[0];
+		this._fMaxFrame=max_frame[0];
 		
 		//表情と最大フレームを再取得
 		this._face_data_array=createFaceDataList(reader,max_frame);
-		this.m_fMaxFrame=this.m_fMaxFrame>max_frame[0]?this.m_fMaxFrame:max_frame[0];
+		this._fMaxFrame=this._fMaxFrame>max_frame[0]?this._fMaxFrame:max_frame[0];
 		
 		return true;
 	}

@@ -89,7 +89,7 @@ public class MmdTest implements GLEventListener
 			return;
 		}
 */		
-		String vmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\Motion\\hannyasinkyo.vmd";
+		String vmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\Motion\\初音ミクVer2みなぎる.vmd";
 		String pmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\model\\初音ミクVer2.pmd";
 		//PMD
 		FileInputStream fs = new FileInputStream(pmd_file);
@@ -99,7 +99,6 @@ public class MmdTest implements GLEventListener
 		this._vmd = new MmdVmdMotion(fs2);
 		// Player
 		this._player = new MmdMotionPlayer(this._pmd, this._vmd);
-		this._player.setLoop(true);//ループするよ。
 		//テクスチャ用のIO
 		File f=new File(pmd_file);//pmdのパス
 		this._data_io=new FileIO(f.getParentFile().getPath());
@@ -174,15 +173,12 @@ public class MmdTest implements GLEventListener
 
 	}
 
-	private long prev_time = 0;
-
 	public void display(GLAutoDrawable drawable)
 	{
-		long iTime = System.currentTimeMillis() - this.animation_start_time;
-		float fDiffTime = (float) (iTime - prev_time) * 30 / 1000.0f;
-		prev_time = iTime;
+		long now = System.currentTimeMillis();
 		try {
-			this._player.updateMotion(fDiffTime);
+			this._player.updateMotion(now - this.animation_start_time);
+			
 			//this._player.updateNeckBone(100.0f,10f,10f);
 			this._render.updateSkinning(this._player.refSkinningMatrix());
 
