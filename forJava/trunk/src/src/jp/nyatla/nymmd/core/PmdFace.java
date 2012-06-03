@@ -57,7 +57,7 @@ public class PmdFace
 		// baseとの相対インデックスを絶対インデックスに変換
 		if (pPMDFaceBase != null) {
 			final PMD_FACE_VTX[] vertex_array = this._face_vertex;
-			for (int i = 0; i < this._face_vertex.length; i++) {
+			for (int i =this._face_vertex.length-1; i>=0 ; i--) {
 				final PMD_FACE_VTX vertex = vertex_array[i];
 				vertex.vec3Pos.Vector3Add(pPMDFaceBase._face_vertex[vertex.ulIndex].vec3Pos, vertex.vec3Pos);
 				vertex.ulIndex = pPMDFaceBase._face_vertex[vertex.ulIndex].ulIndex;
@@ -73,7 +73,7 @@ public class PmdFace
 		}
 
 		final PMD_FACE_VTX[] vertex_array = this._face_vertex;
-		for (int i = 0; i < vertex_array.length; i++) {
+		for (int i = vertex_array.length-1; i>=0 ; i--) {
 			final PMD_FACE_VTX vertex = vertex_array[i];
 			pvec3Vertices[vertex.ulIndex].setValue(vertex.vec3Pos);
 		}
@@ -87,10 +87,10 @@ public class PmdFace
 		}
 
 		PMD_FACE_VTX[] vertex_array = this._face_vertex;
-		for (int i = 0; i < vertex_array.length; i++) {
+		for (int i = vertex_array.length-1; i >=0 ; i--) {
 			final PMD_FACE_VTX vertex = vertex_array[i];
-			final int ulIndex = vertex.ulIndex;
-			pvec3Vertices[ulIndex].Vector3Lerp(pvec3Vertices[ulIndex], vertex.vec3Pos, fRate);
+			MmdVector3 vec=pvec3Vertices[vertex.ulIndex];
+			vec.Vector3Lerp(vec, vertex.vec3Pos, fRate);
 		}
 		return;
 	}

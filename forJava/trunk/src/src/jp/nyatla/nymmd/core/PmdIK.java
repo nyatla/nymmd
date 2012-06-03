@@ -98,16 +98,11 @@ public class PmdIK
 	{
 		return this.m_nSortVal;
 	}
-	private final MmdVector3 __update_vec3OrgTargetPos=new MmdVector3();
 	private final MmdMatrix __update_matInvBone=new MmdMatrix();
 	public void update()
 	{
-		final MmdVector3 vec3OrgTargetPos=this.__update_vec3OrgTargetPos;
 		final MmdMatrix matInvBone=this.__update_matInvBone;
 
-		vec3OrgTargetPos.x = (float)m_pTargetBone.m_matLocal.m30;
-		vec3OrgTargetPos.y = (float)m_pTargetBone.m_matLocal.m31;
-		vec3OrgTargetPos.z = (float)m_pTargetBone.m_matLocal.m32;
 
 		final MmdVector3 vec3EffPos=this._work_vector3[0];
 		final MmdVector3 vec3TargetPos=this._work_vector3[1];
@@ -125,16 +120,13 @@ public class PmdIK
 			for(int j = 0 ; j < this.m_ppBoneList.length ; j++ )
 			{
 				// エフェクタの位置の取得
-				vec3EffPos.x = (float)m_pEffBone.m_matLocal.m30;
-				vec3EffPos.y = (float)m_pEffBone.m_matLocal.m31;
-				vec3EffPos.z = (float)m_pEffBone.m_matLocal.m32;
 
 				// ワールド座標系から注目ノードの局所(ローカル)座標系への変換
 				matInvBone.inverse(m_ppBoneList[j].m_matLocal );
 
 				// エフェクタ，到達目標のローカル位置
-				vec3EffPos.Vector3Transform(vec3EffPos, matInvBone );
-				vec3TargetPos.Vector3Transform(vec3OrgTargetPos, matInvBone);
+				vec3EffPos.Vector3Transform(m_pEffBone.m_matLocal, matInvBone );
+				vec3TargetPos.Vector3Transform(m_pTargetBone.m_matLocal, matInvBone);
 
 				// 十分近ければ終了
 

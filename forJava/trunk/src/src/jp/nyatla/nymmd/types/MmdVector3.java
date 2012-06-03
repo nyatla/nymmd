@@ -126,6 +126,16 @@ public class MmdVector3
 		this.z =(float)(vx * matTransform.m02 + vy * matTransform.m12 + vz * matTransform.m22 + matTransform.m32);
 		return;
 	}
+	public void Vector3Transform(MmdMatrix i_posmat,MmdMatrix matTransform)
+	{
+		final double vx=i_posmat.m30;
+		final double vy=i_posmat.m31;
+		final double vz=i_posmat.m32;
+		this.x =(float)(vx * matTransform.m00 + vy * matTransform.m10 + vz * matTransform.m20 + matTransform.m30);
+		this.y =(float)(vx * matTransform.m01 + vy * matTransform.m11 + vz * matTransform.m21 + matTransform.m31);
+		this.z =(float)(vx * matTransform.m02 + vy * matTransform.m12 + vz * matTransform.m22 + matTransform.m32);
+		return;
+	}	
 
 	public void Vector3Rotate(MmdVector3 pVec3In,MmdMatrix matRotate)
 	{

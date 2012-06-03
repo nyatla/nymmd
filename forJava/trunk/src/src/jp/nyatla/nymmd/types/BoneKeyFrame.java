@@ -37,7 +37,7 @@ public class BoneKeyFrame
 {
 	public float fFrameNo;		// フレーム番号
 	public final MmdVector3	vec3Position=new MmdVector3();	// 位置
-	public final MmdVector4	vec4Rotate=new MmdVector4();		// 回転(クォータニオン)
+	public final MmdVector4	vec4Rotate=new MmdVector4();	// 回転(クォータニオン)
 	public static BoneKeyFrame[] createArray(int i_length)
 	{
 		BoneKeyFrame[] ret=new BoneKeyFrame[i_length];

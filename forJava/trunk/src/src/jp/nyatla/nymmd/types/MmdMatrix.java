@@ -36,7 +36,6 @@ import jp.nyatla.nyartoolkit.NyARDoubleMatrix44;
 public class MmdMatrix extends NyARDoubleMatrix44
 {
 	//NyARToolkitと統合かな。
-//	public final double[][] m=new double[4][4];
 	public static MmdMatrix[] createArray(int i_length)
 	{
 		MmdMatrix[] ret=new MmdMatrix[i_length];
@@ -46,70 +45,7 @@ public class MmdMatrix extends NyARDoubleMatrix44
 		}
 		return ret;
 	}
-//	public void MatrixIdentity()
-//	{
-//		this.m[0][1] = this.m[0][2] = this.m[0][3] =this.m[1][0] = this.m[1][2] = this.m[1][3] =this.m[2][0] = this.m[2][1] = this.m[2][3] =this.m[3][0] = this.m[3][1] = this.m[3][2] = 0.0f;
-//		this.m[0][0] = this.m[1][1] = this.m[2][2] = this.m[3][3] = 1.0f;
-//		return;
-//	}
-//	private final double[][] _array_temp=new double[4][4];
-//	public void MatrixMultiply(MmdMatrix matSrc1,MmdMatrix matSrc2 )
-//	{
-//		final double[][] matTemp=this._array_temp;
-//		int		i;
-//		
-//		for( i = 0 ; i < 4 ; i++ )
-//		{
-//			matTemp[i][0] =	matSrc1.m[i][0] * matSrc2.m[0][0] + matSrc1.m[i][1] * matSrc2.m[1][0] + matSrc1.m[i][2] * matSrc2.m[2][0] + matSrc1.m[i][3] * matSrc2.m[3][0];
-//			matTemp[i][1] =	matSrc1.m[i][0] * matSrc2.m[0][1] + matSrc1.m[i][1] * matSrc2.m[1][1] + matSrc1.m[i][2] * matSrc2.m[2][1] + matSrc1.m[i][3] * matSrc2.m[3][1];
-//			matTemp[i][2] =	matSrc1.m[i][0] * matSrc2.m[0][2] + matSrc1.m[i][1] * matSrc2.m[1][2] + matSrc1.m[i][2] * matSrc2.m[2][2] + matSrc1.m[i][3] * matSrc2.m[3][2];
-//			matTemp[i][3] =	matSrc1.m[i][0] * matSrc2.m[0][3] + matSrc1.m[i][1] * matSrc2.m[1][3] + matSrc1.m[i][2] * matSrc2.m[2][3] + matSrc1.m[i][3] * matSrc2.m[3][3];
-//		}
-//
-//		for( i = 0 ; i < 4 ; i++ )
-//		{
-//			this.m[i][0] = matTemp[i][0];
-//			this.m[i][1] = matTemp[i][1];
-//			this.m[i][2] = matTemp[i][2];
-//			this.m[i][3] = matTemp[i][3];
-//		}
-//	}
-/*
-	public void MatrixInverse(MmdMatrix matSrc)
-	{
-		final double[][] matTemp=this._array_temp;
-		for(int i=0;i<4;i++){
-			for(int i2=0;i2<4;i2++){
-				matTemp[i][i2]=matSrc.m[i][i2];
-			}
-		}
-		this.identity();
 
-		//掃き出し法
-		for( int i = 0 ; i < 4 ; i++ )
-		{
-			double	buf = 1.0 / matTemp[i][i];
-			for( int j = 0 ; j < 4 ; j++ )
-			{
-				matTemp[i][j] *= buf;
-				this.m[i][j] *= buf;
-			}
-			for( int j = 0 ; j < 4 ; j++ )
-			{
-				if( i != j )
-				{
-					buf = matTemp[j][i];
-					for( int k = 0 ; k < 4 ; k++ )
-					{
-						matTemp[j][k] -= matTemp[i][k] * buf;
-						this.m[j][k] -= this.m[i][k] * buf;
-					}
-				}
-			}
-		}
-		return;
-	}
-*/
 	public void MatrixLerp(MmdMatrix sm1, MmdMatrix sm2, float fLerpValue )
 	{
 		double fT = 1.0 - fLerpValue;

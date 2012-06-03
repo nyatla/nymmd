@@ -93,7 +93,7 @@ public class MmdMotionPlayer
 	 * モーションの先頭からの時刻をms単位で指定します。
 	 * @throws MmdException
 	 */
-	public void updateMotion(long i_position_in_msec) throws MmdException
+	public void updateMotion(float i_position_in_msec) throws MmdException
 	{
 		final MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();
 		final PmdIK[] ik_array=this._ref_pmd_model.getIKArray();
@@ -117,6 +117,14 @@ public class MmdMotionPlayer
 		for(int i = 0 ; i < ik_array.length ; i++ )
 		{
 			ik_array[i].update();
+		}
+		//Lookme!
+		
+		//
+		// スキニング用行列の更新
+		for(int i = 0 ; i < bone_array.length ; i++ )
+		{
+			bone_array[i].updateSkinningMat(this._skinning_mat[i]);
 		}
 		return;
 	}
@@ -155,16 +163,16 @@ public class MmdMotionPlayer
 	//現在のスキニングマトリクスを返す。
 	public MmdMatrix[] refSkinningMatrix()
 	{
-		PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
-		// スキニング用行列の更新
-		for(int i = 0 ; i < bone_array.length ; i++ )
-		{
-			bone_array[i].updateSkinningMat(this._skinning_mat[i]);
-		}
+//		PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
+//		// スキニング用行列の更新
+//		for(int i = 0 ; i < bone_array.length ; i++ )
+//		{
+//			bone_array[i].updateSkinningMat(this._skinning_mat[i]);
+//		}
 
 		return this._skinning_mat;
 	}
-	private void updateBoneFace(long i_position_in_msec) throws MmdException
+	private void updateBoneFace(float i_position_in_msec) throws MmdException
 	{
 		assert i_position_in_msec>=0;
 		//描画するフレームを計算する。
@@ -176,21 +184,15 @@ public class MmdMotionPlayer
 		//---------------------------------------------------------
 		// 指定フレームのデータでボーンを動かす
 		final PmdBone[] ppBone = this.m_ppBoneList;
-		MmdVector3 vec3Position=new MmdVector3();
-		MmdVector4 vec4Rotate=new MmdVector4();
 
 		MotionData[] pMotionDataList = _ref_vmd_motion.refMotionDataArray();
 		for(int i=0;i<pMotionDataList.length;i++)
 		{
-			getMotionPosRot(pMotionDataList[i],frame,vec3Position,vec4Rotate);
-
-			// 補間なし
 			if(ppBone[i]==null){
 				continue;
 			}
-			ppBone[i].m_vec3Position.setValue(vec3Position);
-			ppBone[i].m_vec4Rotate.setValue(vec4Rotate);
-
+			pMotionDataList[i].getMotionPosRot(frame,ppBone[i]);
+//			ppBone[i].m_vec3Position.setValue(vec3Position);
 			//	 補間あり
 			//				Vector3Lerp( &((*pBone)->m_vec3Position), &((*pBone)->m_vec3Position), &vec3Position, fLerpValue );
 			//				QuaternionSlerp( &((*pBone)->m_vec4Rotate), &((*pBone)->m_vec4Rotate), &vec4Rotate, fLerpValue );
@@ -219,81 +221,6 @@ public class MmdMotionPlayer
 		return;
 	}	
 	
-	
-	/**
-	 * @author やねうらお さん
-	 * @param pKeyFrames
-	 * @param fFrame
-	 * @param start
-	 * @param end
-	 * @return
-	 */
-	private static int findByBinarySearch(BoneKeyFrame[] pKeyFrames,float fFrame, int start, int end)
-	{
-		int diff = end - start;
-		if (diff < 8) {
-			// ある程度小さくなったら逐次サーチ。このな かに見つかるはずなんだ。
-			for (int i = start; i < end; i++) {
-				if (fFrame < pKeyFrames[i].fFrameNo) {
-					return i;
-				}
-			}
-			return end;
-		}
-
-		// 再帰的に調べる
-		int mid = (start + end) / 2;
-		if (fFrame < pKeyFrames[mid].fFrameNo){
-			return findByBinarySearch(pKeyFrames, fFrame, start, mid);
-		}
-		else{
-			return findByBinarySearch(pKeyFrames, fFrame, mid, end);
-		}
-	}	
-
-	private void getMotionPosRot(MotionData pMotionData, float fFrame, MmdVector3 pvec3Pos, MmdVector4 pvec4Rot)
-	{
-		int	i;
-		int	ulNumKeyFrame = pMotionData.ulNumKeyFrames;
-
-		// 最終フレームを過ぎていた場合
-		if( fFrame > pMotionData.pKeyFrames[ulNumKeyFrame - 1].fFrameNo )
-		{
-			fFrame = pMotionData.pKeyFrames[ulNumKeyFrame - 1].fFrameNo;
-		}
-		
-		// 現在の時間がどのキー近辺にあるか
-		i=findByBinarySearch(pMotionData.pKeyFrames,fFrame,0,ulNumKeyFrame-1);
-
-
-		// 前後のキーを設定
-		int	lKey0,lKey1;
-
-		lKey0 = i - 1;
-		lKey1 = i;
-
-		if( lKey0 <= 0 )			lKey0 = 0;
-		if( i == ulNumKeyFrame )	lKey1 = ulNumKeyFrame - 1;
-
-		// 前後のキーの時間
-		float	fTime0 = pMotionData.pKeyFrames[lKey0].fFrameNo;
-		float	fTime1 = pMotionData.pKeyFrames[lKey1].fFrameNo;
-
-		// 前後のキーの間でどの位置にいるか
-		float	fLerpValue;
-		if( lKey0 != lKey1 )
-		{
-			fLerpValue = (fFrame - fTime0) / (fTime1 - fTime0);
-			pvec3Pos.Vector3Lerp(pMotionData.pKeyFrames[lKey0].vec3Position,pMotionData.pKeyFrames[lKey1].vec3Position, fLerpValue);
-			pvec4Rot.QuaternionSlerp(pMotionData.pKeyFrames[lKey0].vec4Rotate,pMotionData.pKeyFrames[lKey1].vec4Rotate, fLerpValue);
-			pvec4Rot.QuaternionNormalize(pvec4Rot);//これほんとにいるの？
-		}
-		else
-		{
-			pvec3Pos.setValue(pMotionData.pKeyFrames[lKey0].vec3Position);
-			pvec4Rot.setValue(pMotionData.pKeyFrames[lKey0].vec4Rotate);
-		}		
-	}
 
 	private float getFaceRate(FaceData pFaceData, float fFrame)
 	{
