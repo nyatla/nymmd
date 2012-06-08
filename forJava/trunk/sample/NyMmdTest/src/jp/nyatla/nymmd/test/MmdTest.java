@@ -10,25 +10,7 @@ import jp.nyatla.nymmd.*;
 
 import com.sun.opengl.util.*;
 
-class FileIO implements IMmdDataIo
-{
-	private String _dir;
-	public FileIO(String i_dir)
-	{
-		this._dir=i_dir;
-	}
-	public InputStream request(String i_name)
-	{
-		FileInputStream fs2;
-		try {
-			fs2 = new FileInputStream(this._dir +"\\"+ i_name);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return fs2;
-	}
-}
+
 
 public class MmdTest implements GLEventListener
 {
@@ -42,15 +24,14 @@ public class MmdTest implements GLEventListener
 
 	private long animation_start_time;
 
-	private MmdPmdModel _pmd;
+	private MmdPmdModel_BasicClass _pmd;
 
-	private MmdVmdMotion _vmd;
+	private MmdVmdMotion_BasicClass _vmd;
 
-	private MmdMotionPlayer _player;
+	private MmdMotionPlayerGL _player;
 
-	private IMmdPmdRender _render;
+//	private IMmdPmdRender _render;
 	
-	private IMmdDataIo _data_io;
 
 	public MmdTest() throws MmdException, IOException
 	{
@@ -61,7 +42,7 @@ public class MmdTest implements GLEventListener
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e)
 			{
-				_render.dispose();//忘れないように。
+				_player.dispose();//忘れないように。
 				System.exit(0);
 			}
 		});	
@@ -92,16 +73,9 @@ public class MmdTest implements GLEventListener
 		String vmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\Motion\\初音ミクVer2みなぎる.vmd";
 		String pmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\model\\初音ミクVer2.pmd";
 		//PMD
-		FileInputStream fs = new FileInputStream(pmd_file);
-		this._pmd = new MmdPmdModel(fs);
+		this._pmd = new MmdPmdModel(pmd_file);
 		//VMD
-		FileInputStream fs2 = new FileInputStream(vmd_file);
-		this._vmd = new MmdVmdMotion(fs2);
-		// Player
-		this._player = new MmdMotionPlayer(this._pmd, this._vmd);
-		//テクスチャ用のIO
-		File f=new File(pmd_file);//pmdのパス
-		this._data_io=new FileIO(f.getParentFile().getPath());
+		this._vmd = new MmdVmdMotion(vmd_file);
 		
 		//OpenGL
 		GLCanvas canvas = new GLCanvas();
@@ -115,10 +89,10 @@ public class MmdTest implements GLEventListener
 	{
 		this._gl = drawable.getGL();
 		try {
-
-			this._render = new MmdPmdRenderGL(this._gl);
-			this._render.setPmd(this._pmd,this._data_io);
-
+			// Player
+			this._player = new MmdMotionPlayerGL(this._gl);
+			this._player.setPmd(this._pmd);
+			this._player.setVmd(this._vmd);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -180,7 +154,6 @@ public class MmdTest implements GLEventListener
 			this._player.updateMotion(now - this.animation_start_time);
 			
 			//this._player.updateNeckBone(100.0f,10f,10f);
-			this._render.updateSkinning(this._player.refSkinningMatrix());
 
 			this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 			_gl.glEnable(GL.GL_CULL_FACE);
@@ -194,7 +167,7 @@ public class MmdTest implements GLEventListener
 
 			_gl.glScalef(1.0f, 1.0f, -1.0f); // 左手系 → 右手系
 			//レンダリング
-			this._render.render();
+			this._player.render();
 			_gl.glPopMatrix();
 
 			Thread.sleep(1);

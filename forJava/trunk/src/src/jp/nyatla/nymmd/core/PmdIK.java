@@ -110,12 +110,13 @@ public class PmdIK
 		final MmdVector3 vec3RotAxis=this._work_vector3[3];
 		final MmdVector4 vec4RotQuat=this._work_vector4;
 		
+		//事前に全Boneをupdateしてるなら、このコードは要らない?
 		for(int i =this.m_ppBoneList.length - 1 ; i >= 0 ; i-- ){
 			this.m_ppBoneList[i].updateMatrix();
 		}
 		m_pEffBone.updateMatrix();
 
-		for(int it = 0 ; it < m_unCount ; it++ )
+		for(int it = this.m_unCount-1 ; it >=0  ; it--)
 		{
 			for(int j = 0 ; j < this.m_ppBoneList.length ; j++ )
 			{

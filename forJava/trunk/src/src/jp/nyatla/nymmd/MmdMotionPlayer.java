@@ -39,38 +39,25 @@ import jp.nyatla.nymmd.types.*;
 
 public class MmdMotionPlayer
 {
-	private MmdPmdModel _ref_pmd_model;
-	private MmdVmdMotion _ref_vmd_motion;
+	protected MmdPmdModel_BasicClass _ref_pmd_model;
+	protected MmdVmdMotion_BasicClass _ref_vmd_motion;
 
 	private PmdBone[] m_ppBoneList;
 	private PmdFace[] m_ppFaceList;
 
-	private MmdMatrix[] _skinning_mat;
+	public MmdMatrix[] _skinning_mat;
 
 	private PmdBone m_pNeckBone;		// 首のボーン
-
-
-	public MmdMotionPlayer(MmdPmdModel i_pmd_model, MmdVmdMotion i_vmd_model)
+	public MmdMotionPlayer()
+	{
+		return;
+	}
+	public void setPmd(MmdPmdModel_BasicClass i_pmd_model) throws MmdException
 	{
 		this._ref_pmd_model = i_pmd_model;
-		this._ref_vmd_motion = i_vmd_model;
 		PmdBone[] bone_array=i_pmd_model.getBoneArray();
 		//スキニング用のmatrix
 		this._skinning_mat=MmdMatrix.createArray(bone_array.length);
-		// 操作対象ボーンのポインタを設定する
-		MotionData[] pMotionDataList = i_vmd_model.refMotionDataArray();
-		this.m_ppBoneList =new PmdBone[pMotionDataList.length];
-		for(int i=0;i<pMotionDataList.length;i++)
-		{
-			this.m_ppBoneList[i]=i_pmd_model.getBoneByName(pMotionDataList[i].szBoneName);
-		}
-		// 操作対象表情のポインタを設定する
-		FaceData[] pFaceDataList = i_vmd_model.refFaceDataArray();
-		this.m_ppFaceList = new PmdFace[pFaceDataList.length];
-		for(int i=0;i<pFaceDataList.length;i++)
-		{
-			this.m_ppFaceList[i]=i_pmd_model.getFaceByName(pFaceDataList[i].szFaceName);
-		}
 		//首^H頭のボーンを探しておく
 		this.m_pNeckBone=null;
 		for(int i=0;i<bone_array.length;i++){
@@ -79,10 +66,55 @@ public class MmdMotionPlayer
 				break;
 			}			
 		}
+		//PMD/VMDが揃った？
+		if(this._ref_vmd_motion!=null){
+			makeBoneFaceList();
+		}		
+		return;		
+	}
+	public void setVmd(MmdVmdMotion_BasicClass i_vmd_model) throws MmdException
+	{
+		this._ref_vmd_motion = i_vmd_model;
+		// 操作対象ボーンのポインタを設定する
+		MotionData[] pMotionDataList = i_vmd_model.refMotionDataArray();
+		this.m_ppBoneList =new PmdBone[pMotionDataList.length];
+		// 操作対象表情のポインタを設定する
+		FaceData[] pFaceDataList = i_vmd_model.refFaceDataArray();
+		this.m_ppFaceList = new PmdFace[pFaceDataList.length];
+		//PMD/VMDが揃った？
+		if(this._ref_pmd_model!=null){
+			makeBoneFaceList();
+		}
 		return;
+	}
+	private void makeBoneFaceList()
+	{
+		MmdPmdModel_BasicClass pmd_model=this._ref_pmd_model;
+		MmdVmdMotion_BasicClass vmd_model=this._ref_vmd_motion;
+
+		// 操作対象ボーンのポインタを設定する
+		MotionData[] pMotionDataList = vmd_model.refMotionDataArray();
+		this.m_ppBoneList =new PmdBone[pMotionDataList.length];
+		for(int i=0;i<pMotionDataList.length;i++)
+		{
+			this.m_ppBoneList[i]=pmd_model.getBoneByName(pMotionDataList[i].szBoneName);
+		}
+		// 操作対象表情のポインタを設定する
+		FaceData[] pFaceDataList = vmd_model.refFaceDataArray();
+		this.m_ppFaceList = new PmdFace[pFaceDataList.length];
+		for(int i=0;i<pFaceDataList.length;i++)
+		{
+			this.m_ppFaceList[i]=pmd_model.getFaceByName(pFaceDataList[i].szFaceName);
+		}
+		return;		
 	}
 
 
+	/**
+	 * VMDの再生時間長を返します。
+	 * @return
+	 * ms単位の再生時間
+	 */
 	public float getTimeLength()
 	{
 		return (float) (this._ref_vmd_motion.getMaxFrame()*(100.0/3));
@@ -95,17 +127,20 @@ public class MmdMotionPlayer
 	 */
 	public void updateMotion(float i_position_in_msec) throws MmdException
 	{
-		final MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();
 		final PmdIK[] ik_array=this._ref_pmd_model.getIKArray();
 		final PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
-		final PmdFace[] face_array=this._ref_pmd_model.getFaceArray();
-		// モーション更新前に表情をリセット
-		if(face_array!=null){
-			face_array[0].setFace(position_array);
+		assert i_position_in_msec>=0;
+		//描画するフレームを計算する。
+		float frame=(float)(i_position_in_msec/(100.0/3));
+		//範囲外を除外
+		if(frame>this._ref_vmd_motion.getMaxFrame()){
+			frame=this._ref_vmd_motion.getMaxFrame();
 		}
+		this.updateFace(frame);
 
+		
 		// モーション更新
-		this.updateBoneFace(i_position_in_msec);
+		this.updateBone(frame);
 
 		// ボーン行列の更新
 		for(int i = 0 ; i < bone_array.length ; i++ )
@@ -119,31 +154,46 @@ public class MmdMotionPlayer
 			ik_array[i].update();
 		}
 		//Lookme!
-		
+		if(this._lookme_enabled){
+			this.updateNeckBone();
+		}
 		//
 		// スキニング用行列の更新
 		for(int i = 0 ; i < bone_array.length ; i++ )
 		{
 			bone_array[i].updateSkinningMat(this._skinning_mat[i]);
 		}
+		this.onUpdateSkinningMatrix(this._skinning_mat);
 		return;
 	}
+	protected void onUpdateSkinningMatrix(MmdMatrix[] i_skinning_mat) throws MmdException
+	{
+		throw new MmdException("Must be override onUpdateSkinningMatrix.");
+	}
+	
+	public void setLookVector(float i_x,float i_y,float i_z)
+	{
+		this._looktarget.x=i_x;
+		this._looktarget.y=i_y;
+		this._looktarget.z=i_z;
+	}
+	public void lookMeEnable(boolean i_enable)
+	{
+		this._lookme_enabled=i_enable;
+	}
+	private MmdVector3 _looktarget=new MmdVector3();
+	private boolean _lookme_enabled=false;
 	/**
 	 * look me
 	 * @param pvec3LookTarget
 	 */
-	private MmdVector3 __updateNeckBone_looktarget=new MmdVector3();
-	public void updateNeckBone(float i_x,float i_y,float i_z)
+	private void updateNeckBone()
 	{
-		final MmdVector3 looktarget=this.__updateNeckBone_looktarget;
-		looktarget.x=i_x;
-		looktarget.y=i_y;
-		looktarget.z=i_z;
 		if(this.m_pNeckBone==null)
 		{
 			return;
 		}
-		this.m_pNeckBone.lookAt(looktarget);
+		this.m_pNeckBone.lookAt(this._looktarget);
 
 		PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
 		int i;
@@ -158,29 +208,9 @@ public class MmdMotionPlayer
 			bone_array[i].updateMatrix();
 		}
 		return;
-	}	
-	
-	//現在のスキニングマトリクスを返す。
-	public MmdMatrix[] refSkinningMatrix()
-	{
-//		PmdBone[] bone_array=this._ref_pmd_model.getBoneArray();
-//		// スキニング用行列の更新
-//		for(int i = 0 ; i < bone_array.length ; i++ )
-//		{
-//			bone_array[i].updateSkinningMat(this._skinning_mat[i]);
-//		}
-
-		return this._skinning_mat;
 	}
-	private void updateBoneFace(float i_position_in_msec) throws MmdException
+	private void updateBone(float i_frame) throws MmdException
 	{
-		assert i_position_in_msec>=0;
-		//描画するフレームを計算する。
-		float frame=(float)(i_position_in_msec/(100.0/3));
-		//範囲外を除外
-		if(frame>this._ref_vmd_motion.getMaxFrame()){
-			frame=this._ref_vmd_motion.getMaxFrame();
-		}
 		//---------------------------------------------------------
 		// 指定フレームのデータでボーンを動かす
 		final PmdBone[] ppBone = this.m_ppBoneList;
@@ -191,27 +221,30 @@ public class MmdMotionPlayer
 			if(ppBone[i]==null){
 				continue;
 			}
-			pMotionDataList[i].getMotionPosRot(frame,ppBone[i]);
+			pMotionDataList[i].getMotionPosRot(i_frame,ppBone[i]);
 //			ppBone[i].m_vec3Position.setValue(vec3Position);
 			//	 補間あり
 			//				Vector3Lerp( &((*pBone)->m_vec3Position), &((*pBone)->m_vec3Position), &vec3Position, fLerpValue );
 			//				QuaternionSlerp( &((*pBone)->m_vec4Rotate), &((*pBone)->m_vec4Rotate), &vec4Rotate, fLerpValue );
 		}
-
-		//---------------------------------------------------------
-		// 指定フレームのデータで表情を変形する
-		MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();
-		
+		return;
+	}
+	/**
+	 * 指定フレームのデータで表情を変形する
+	 * @param i_frame
+	 * @throws MmdException
+	 */
+	private void updateFace(float i_frame) throws MmdException
+	{
+		final MmdVector3[] position_array=this._ref_pmd_model.getPositionArray();
 		PmdFace[] ppFace = this.m_ppFaceList;
 		FaceData[] pFaceDataList = _ref_vmd_motion.refFaceDataArray();
 		for(int i=0;i<pFaceDataList.length;i++)
 		{
-			final float fFaceRate = getFaceRate( pFaceDataList[i],frame);
+			final float fFaceRate = getFaceRate( pFaceDataList[i],i_frame);
 			if(ppFace[i]==null){
 				continue;
 			}
-
-			
 			if( fFaceRate == 1.0f ){
 				ppFace[i].setFace(position_array);
 			}else if( 0.001f < fFaceRate ){
@@ -219,8 +252,7 @@ public class MmdMotionPlayer
 			}
 		}
 		return;
-	}	
-	
+	}		
 
 	private float getFaceRate(FaceData pFaceData, float fFrame)
 	{

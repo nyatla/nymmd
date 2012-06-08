@@ -31,9 +31,9 @@
  */
 package jp.nyatla.nymmd.types;
 
-import jp.nyatla.nyartoolkit.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.MMdDoubleMatrix44;
 
-public class MmdMatrix extends NyARDoubleMatrix44
+public class MmdMatrix extends MMdDoubleMatrix44
 {
 	//NyARToolkitと統合かな。
 	public static MmdMatrix[] createArray(int i_length)
