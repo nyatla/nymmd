@@ -28,7 +28,7 @@ public class MmdTest implements GLEventListener
 
 	private MmdVmdMotion_BasicClass _vmd;
 
-	private MmdMotionPlayerGL _player;
+	private MmdMotionPlayerGL2 _player;
 
 //	private IMmdPmdRender _render;
 	
@@ -90,7 +90,7 @@ public class MmdTest implements GLEventListener
 		this._gl = drawable.getGL();
 		try {
 			// Player
-			this._player = new MmdMotionPlayerGL(this._gl);
+			this._player = new MmdMotionPlayerGL2(this._gl);
 			this._player.setPmd(this._pmd);
 			this._player.setVmd(this._vmd);
 		} catch (Exception e) {

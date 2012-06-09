@@ -19,7 +19,7 @@ import jp.nyatla.nymmd.types.*;
 
 
 
-public class MmdMotionPlayerGL extends MmdMotionPlayer
+public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 {
 	private class TextureList extends ArrayList<TextureList.Item>
 	{
@@ -98,7 +98,6 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
 			throw new MmdException();
 		}
 	}	
-	
 	private class Material
 	{
 		public final float[] color = new float[12];// Diffuse,Specular,Ambientの順
@@ -108,7 +107,7 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
 		public int texture_id;
 		public int unknown;
 	}	
-	public MmdMotionPlayerGL(GL i_gl)
+	public MmdMotionPlayerGL2(GL i_gl)
 	{
 		super();
 		this._gl=i_gl;
@@ -119,11 +118,15 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
 		this._tex_list.clear();
 	}	
 	private GL _gl;
-	private MmdVector3[] _position_array;
-	private MmdVector3[] _normal_array;
 	private TextureList _tex_list;
 	private final MmdMatrix __tmp_matrix = new MmdMatrix();
 	private Material[] _materials;
+	private float[] _fbuf;
+	private FloatBuffer _pos_array;
+	private FloatBuffer _nom_array;
+	private FloatBuffer _tex_array;	
+	
+	
 	public void setPmd(MmdPmdModel_BasicClass i_pmd_model) throws MmdException
 	{
 		super.setPmd(i_pmd_model);
@@ -135,11 +138,7 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
 		this._pos_array=makeFloatBuffer(number_of_vertex* 3);
 		this._nom_array=makeFloatBuffer(number_of_vertex * 3);
 		this._tex_array=makeFloatBuffer(this._ref_pmd_model.getUvArray().length*2);
-
-		
-		
-		this._position_array = MmdVector3.createArray(number_of_vertex);
-		this._normal_array = MmdVector3.createArray(number_of_vertex);
+		this._fbuf=new float[number_of_vertex*3*2];
 		
 		MmdPmdModel_BasicClass.IResourceProvider tp=i_pmd_model.getResourceProvider();
 		
@@ -166,48 +165,67 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
 		}
 		this._materials = materials.toArray(new Material[materials.size()]);
 
+		FloatBuffer tex_array = this._tex_array;
+		tex_array.position(0);
+		final MmdTexUV[] texture_uv = this._ref_pmd_model.getUvArray();
+		for (int i = 0; i < number_of_vertex; i++) {
+			tex_array.put(texture_uv[i].u);
+			tex_array.put(texture_uv[i].v);
+		}		
 		return;		
 	}
 	public void setVmd(MmdVmdMotion_BasicClass i_vmd_model) throws MmdException
 	{
 		super.setVmd(i_vmd_model);
 	}
+	
 	/**
 	 * この関数はupdateMotionがskinning_matを更新するを呼び出します。
 	 */
 	protected void onUpdateSkinningMatrix(MmdMatrix[] i_skinning_mat) throws MmdException
 	{
-		int number_of_vertex = this._ref_pmd_model.getNumberOfVertex();
+		MmdVector3 vp;
+		MmdMatrix mat;
 		MmdVector3[] org_pos_array=this._ref_pmd_model.getPositionArray();
 		MmdVector3[] org_normal_array=this._ref_pmd_model.getNormatArray();
 		PmdSkinInfo[] org_skin_info=this._ref_pmd_model.getSkinInfoArray();
 		
-		for (int i = 0; i < number_of_vertex; i++)
+		int number_of_vertex=this._ref_pmd_model.getNumberOfVertex();
+		float[] ft=this._fbuf;
+		int p1=0;
+		int p2=number_of_vertex*3;
+		for (int i = 0; i<this._ref_pmd_model.getNumberOfVertex() ; i++)
 		{
 			PmdSkinInfo info_ptr=org_skin_info[i];
-			if (info_ptr.fWeight == 0.0f) {
-				final MmdMatrix mat = i_skinning_mat[info_ptr.unBoneNo_1];
-				this._position_array[i].Vector3Transform(org_pos_array[i], mat);
-				this._normal_array[i].Vector3Rotate(org_normal_array[i], mat);
+			if (info_ptr.fWeight == 0.0f)
+			{
+				mat = i_skinning_mat[info_ptr.unBoneNo_1];
 			} else if (info_ptr.fWeight >= 0.9999f) {
-				final MmdMatrix mat = i_skinning_mat[info_ptr.unBoneNo_0];
-				this._position_array[i].Vector3Transform(org_pos_array[i], mat);
-				this._normal_array[i].Vector3Rotate(org_normal_array[i], mat);
+				mat = i_skinning_mat[info_ptr.unBoneNo_0];
 			} else {
 				final MmdMatrix mat0 = i_skinning_mat[info_ptr.unBoneNo_0];
 				final MmdMatrix mat1 = i_skinning_mat[info_ptr.unBoneNo_1];
-				final MmdMatrix matTemp = this.__tmp_matrix;
-				matTemp.MatrixLerp(mat0, mat1, info_ptr.fWeight);
-
-				this._position_array[i].Vector3Transform(org_pos_array[i], matTemp);
-				this._normal_array[i].Vector3Rotate(org_normal_array[i], matTemp);
+				mat = this.__tmp_matrix;
+				mat.MatrixLerp(mat0, mat1, info_ptr.fWeight);
 			}
+			vp=org_pos_array[i];
+			ft[p1++]=((float)(vp.x * mat.m00 + vp.y * mat.m10 + vp.z * mat.m20 + mat.m30));
+			ft[p1++]=((float)(vp.x * mat.m01 + vp.y * mat.m11 + vp.z * mat.m21 + mat.m31));
+			ft[p1++]=((float)(vp.x * mat.m02 + vp.y * mat.m12 + vp.z * mat.m22 + mat.m32));			
+			
+			vp=org_normal_array[i];
+			ft[p2++]=((float)(vp.x * mat.m00 + vp.y * mat.m10 + vp.z * mat.m20));
+			ft[p2++]=((float)(vp.x * mat.m01 + vp.y * mat.m11 + vp.z * mat.m21));
+			ft[p2++]=((float)(vp.x * mat.m02 + vp.y * mat.m12 + vp.z * mat.m22));
 		}
+		this._pos_array.position(0);
+		this._pos_array.put(ft,0,number_of_vertex*3);
+		this._nom_array.position(0);
+		this._nom_array.put(ft,number_of_vertex*3,number_of_vertex*3);
 		return;
 	}
 	public void render()
-	{
-		
+	{	
 		final GL gl = this._gl;
 		gl.glEnable(GL.GL_CULL_FACE);
 		gl.glCullFace(GL.GL_FRONT);
@@ -218,49 +236,28 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
 		gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);		
 		
 		
-		final MmdTexUV[] texture_uv = this._ref_pmd_model.getUvArray();
-		final int number_of_vertex = this._ref_pmd_model.getNumberOfVertex();
 		// とりあえずbufferに変換しよう
-		FloatBuffer pos_buf = this._pos_array;
-		pos_buf.position(0);
-		for (int i = 0; i < number_of_vertex; i++) {
-			pos_buf.put(_position_array[i].x);
-			pos_buf.put(_position_array[i].y);
-			pos_buf.put(_position_array[i].z);
-		}
-		FloatBuffer nom_array = this._nom_array;
-		nom_array.position(0);
-		for (int i = 0; i < number_of_vertex; i++) {
-			nom_array.put(_normal_array[i].x);
-			nom_array.put(_normal_array[i].y);
-			nom_array.put(_normal_array[i].z);
-		}
-		FloatBuffer tex_array = this._tex_array;
-		tex_array.position(0);
-		for (int i = 0; i < number_of_vertex; i++) {
-			tex_array.put(texture_uv[i].u);
-			tex_array.put(texture_uv[i].v);
-		}
-		pos_buf.position(0);
-		nom_array.position(0);
-		tex_array.position(0);
+		this._pos_array.position(0);
+		this._nom_array.position(0);
+		this._tex_array.position(0);
 		// とりあえず転写用
 		
 
 		// 頂点座標、法線、テクスチャ座標の各配列をセット
-		gl.glVertexPointer(3, GL.GL_FLOAT, 0, pos_buf);
-		gl.glNormalPointer(GL.GL_FLOAT, 0, nom_array);
-		gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, tex_array);
-		int vertex_index = 0;
-		for (int i = 0; i < this._materials.length; i++) {
+		gl.glVertexPointer(3, GL.GL_FLOAT, 0, this._pos_array);
+		gl.glNormalPointer(GL.GL_FLOAT, 0, this._nom_array);
+		gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, this._tex_array);
+		for (int i = this._materials.length-1; i>=0 ; i--)
+		{
+			final Material mt_ptr=this._materials[i];
 			// マテリアル設定
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, this._materials[i].color, 0);
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, this._materials[i].color, 4);
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, this._materials[i].color,8);
-			gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, this._materials[i].fShininess);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, mt_ptr.color, 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, mt_ptr.color, 4);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, mt_ptr.color,8);
+			gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, mt_ptr.fShininess);
 
             //カリング判定：何となくうまくいったから
-            if ((0x100 & this._materials[i].unknown) == 0x100)
+            if ((0x100 & mt_ptr.unknown) == 0x100)
             {
             	gl.glDisable(GL.GL_CULL_FACE);
             }
@@ -269,27 +266,23 @@ public class MmdMotionPlayerGL extends MmdMotionPlayer
             	gl.glEnable(GL.GL_CULL_FACE);
             }
             
-			if (this._materials[i].texture_id!=0) {
+			if (mt_ptr.texture_id!=0) {
 				// テクスチャありならBindする
 				gl.glEnable(GL.GL_TEXTURE_2D);
-				gl.glBindTexture(GL.GL_TEXTURE_2D, this._materials[i].texture_id);
+				gl.glBindTexture(GL.GL_TEXTURE_2D, mt_ptr.texture_id);
 			} else {
 				// テクスチャなし
 				gl.glDisable(GL.GL_TEXTURE_2D);
 			}
 			// 頂点インデックスを指定してポリゴン描画
-			gl.glDrawElements(GL.GL_TRIANGLES, this._materials[i].ulNumIndices, GL.GL_UNSIGNED_SHORT, this._materials[i].indices);
-			vertex_index += this._materials[i].ulNumIndices;
+			gl.glDrawElements(GL.GL_TRIANGLES, mt_ptr.ulNumIndices, GL.GL_UNSIGNED_SHORT, mt_ptr.indices);
 		}
-
 		gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
 		gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 		return;
 	}
-	FloatBuffer _pos_array;
-	FloatBuffer _nom_array;
-	FloatBuffer _tex_array;
+
     private static FloatBuffer makeFloatBuffer(int i_size)
     {
         ByteBuffer bb = ByteBuffer.allocateDirect(i_size*4);
