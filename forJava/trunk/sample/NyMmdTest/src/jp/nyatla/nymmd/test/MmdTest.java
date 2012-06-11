@@ -48,7 +48,7 @@ public class MmdTest implements GLEventListener
 		});	
 		
 		//PMDとVMDを取得
-/*		FileDialog fd;
+		FileDialog fd;
 
 		fd=new FileDialog(frame, "Select PMD file" , FileDialog.LOAD);
 		fd.setVisible(true);
@@ -69,10 +69,10 @@ public class MmdTest implements GLEventListener
 			frame.dispose();
 			return;
 		}
-*/		
+/*		
 		String vmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\Motion\\初音ミクVer2みなぎる.vmd";
 		String pmd_file="D:\\application.files\\MikuMikuDance_v524\\UserFile\\model\\初音ミクVer2.pmd";
-		//PMD
+*/		//PMD
 		this._pmd = new MmdPmdModel(pmd_file);
 		//VMD
 		this._vmd = new MmdVmdMotion(vmd_file);

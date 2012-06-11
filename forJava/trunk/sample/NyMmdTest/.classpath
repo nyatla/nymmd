@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NyMmd"/>
 	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/jogl.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/src.pcJOGL"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

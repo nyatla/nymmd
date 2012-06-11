@@ -1,7 +1,6 @@
 package jp.nyatla.nymmd;
 
 
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,18 +10,38 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
+import javax.microedition.khronos.opengles.GL10;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.opengl.GLUtils;
+
+import jp.nyatla.nymmd.MmdException;
+import jp.nyatla.nymmd.MmdMotionPlayer;
+import jp.nyatla.nymmd.MmdPmdModel_BasicClass;
+import jp.nyatla.nymmd.MmdVmdMotion_BasicClass;
 import jp.nyatla.nymmd.types.*;
 
 
 
 
 
-public class MmdMotionPlayerGL2 extends MmdMotionPlayer
+public class AndMmdMotionPlayer extends MmdMotionPlayer
 {
-	private class TextureList extends ArrayList<TextureList.Item>
+	private static class TextureList extends ArrayList<TextureList.Item>
 	{
+	    public static int getPow2Size(int i_w,int i_h)
+	    {
+	    	int c=i_w>i_h?i_w:i_h;
+	    	int s=0x1;
+	    	while(s<c){
+	    		s=s<<1;
+	    	}
+	    	return s;
+	    }		
 		/**
 		 * 
 		 */
@@ -31,9 +50,9 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 			public int gl_texture_id;
 			public String file_name;
 		}
-		private GL _gl;
+		private GL10 _gl;
 
-		public TextureList(GL i_gl)
+		public TextureList(GL10 i_gl)
 		{
 			this._gl = i_gl;
 		}
@@ -45,30 +64,43 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 			}
 			super.clear();
 		}
-		private TextureList.Item createTexture(String szFileName, InputStream i_st) throws MmdException
+		private TextureList.Item createTexture(String szFileName,InputStream i_st)throws MmdException
 		{
+			Bitmap img=BitmapFactory.decodeStream(i_st);	
+			GL10 gl = this._gl;
 			IntBuffer texid = IntBuffer.allocate(1);
-			BufferedImage img;
-			try {
-				img = ImageIO.read(i_st);
-			} catch (Exception e) {
+			if (img == null){
 				throw new MmdException();
 			}
-			_gl.glGenTextures(1, texid);
-			_gl.glBindTexture(GL.GL_TEXTURE_2D, texid.get(0));
-			_gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 4);
+			//2^nに変更
+			Bitmap img2;
+			int s=getPow2Size(img.getWidth(),img.getHeight());
+			if(s!=img.getWidth() || s!=img.getHeight()){
+				img2=Bitmap.createBitmap(s,s, Bitmap.Config.ARGB_8888);
+				Canvas canvas=new Canvas(img2);
+				canvas.drawBitmap(img,new Rect(0,0,img.getWidth(),img.getHeight()),new Rect(0,0,img2.getWidth(),img2.getHeight()),new Paint());
+			}else{
+				img2=img;
+			}
+			
+			
+			// 第一引数は画像枚数
+			gl.glGenTextures(1, texid);
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, texid.get(0));
+			gl.glPixelStorei(GL10.GL_UNPACK_ALIGNMENT, 1);
 
-			_gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-			_gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-			_gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-			_gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-			// 転写
+			gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,GL10.GL_LINEAR);
+			gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,GL10.GL_LINEAR);
+			gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,GL10.GL_REPEAT);
+			gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,GL10.GL_REPEAT);
+			gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,GL10.GL_REPLACE);
+			GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, img2, 0);
 
-			int[] rgb_array = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
-			_gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, img.getWidth(), img.getHeight(), 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, IntBuffer.wrap(rgb_array));
-			FloatBuffer prio = FloatBuffer.allocate(1);
-			prio.put(0, 1.0f);
-			_gl.glPrioritizeTextures(1, texid, prio);
+			gl.glEnable(GL10.GL_TEXTURE_2D);
+			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+			// FloatBuffer prio = FloatBuffer.allocate(1);
+			// prio.put(0, 1.0f);
+			// _gl.glPrioritizeTextures(1, texid, prio);
 
 			TextureList.Item ret = new TextureList.Item();
 			ret.file_name = szFileName;
@@ -98,6 +130,7 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 			throw new MmdException();
 		}
 	}	
+	
 	private class Material
 	{
 		public final float[] color = new float[12];// Diffuse,Specular,Ambientの順
@@ -107,7 +140,7 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 		public int texture_id;
 		public int unknown;
 	}	
-	public MmdMotionPlayerGL2(GL i_gl)
+	public AndMmdMotionPlayer(GL10 i_gl)
 	{
 		super();
 		this._gl=i_gl;
@@ -117,7 +150,7 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 	{
 		this._tex_list.clear();
 	}	
-	private GL _gl;
+	private GL10 _gl;
 	private TextureList _tex_list;
 	private final MmdMatrix __tmp_matrix = new MmdMatrix();
 	private Material[] _materials;
@@ -125,8 +158,6 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 	private FloatBuffer _pos_array;
 	private FloatBuffer _nom_array;
 	private FloatBuffer _tex_array;	
-	
-	
 	public void setPmd(MmdPmdModel_BasicClass i_pmd_model) throws MmdException
 	{
 		super.setPmd(i_pmd_model);
@@ -164,21 +195,19 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 			materials.add(new_material);
 		}
 		this._materials = materials.toArray(new Material[materials.size()]);
-
 		FloatBuffer tex_array = this._tex_array;
 		tex_array.position(0);
 		final MmdTexUV[] texture_uv = this._ref_pmd_model.getUvArray();
 		for (int i = 0; i < number_of_vertex; i++) {
 			tex_array.put(texture_uv[i].u);
 			tex_array.put(texture_uv[i].v);
-		}		
+		}
 		return;		
 	}
 	public void setVmd(MmdVmdMotion_BasicClass i_vmd_model) throws MmdException
 	{
 		super.setVmd(i_vmd_model);
 	}
-	
 	/**
 	 * この関数はupdateMotionがskinning_matを更新するを呼び出します。
 	 */
@@ -224,65 +253,70 @@ public class MmdMotionPlayerGL2 extends MmdMotionPlayer
 		this._nom_array.put(ft,number_of_vertex*3,number_of_vertex*3);
 		return;
 	}
+	/**
+	 * 3Dモデルをレンダリングします。
+	 * レンダリングの前に、ライトをONにしてください。
+	 * この関数は、次のパラメータに影響を与えます。
+	 * GL_NORMALIZE,GL_COLOR_ARRAY,GL_VERTEX_ARRAY,GL_NORMAL_ARRAY,GL_TEXTURE_COORD_ARRAY,GL_CULL_FACE
+	 */
 	public void render()
-	{	
-		final GL gl = this._gl;
-		gl.glEnable(GL.GL_CULL_FACE);
-		gl.glCullFace(GL.GL_FRONT);
-		gl.glEnable(GL.GL_NORMALIZE);
-		gl.glEnableClientState(GL.GL_COLOR_ARRAY);
-		gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL.GL_NORMAL_ARRAY);
-		gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);		
-		
-		
+	{
+		final GL10 gl = this._gl;
+		gl.glEnable(GL10.GL_CULL_FACE);
+		gl.glCullFace(GL10.GL_FRONT);
+		gl.glEnable(GL10.GL_NORMALIZE);
+		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		// とりあえずbufferに変換しよう
 		this._pos_array.position(0);
 		this._nom_array.position(0);
 		this._tex_array.position(0);
-		// とりあえず転写用
-		
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, this._pos_array);
+		gl.glNormalPointer(GL10.GL_FLOAT, 0, this._nom_array);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, this._tex_array);
 
-		// 頂点座標、法線、テクスチャ座標の各配列をセット
-		gl.glVertexPointer(3, GL.GL_FLOAT, 0, this._pos_array);
-		gl.glNormalPointer(GL.GL_FLOAT, 0, this._nom_array);
-		gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, this._tex_array);
-		for (int i = this._materials.length-1; i>=0 ; i--)
-		{
+		
+    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,GL10.GL_REPEAT);
+    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,GL10.GL_REPEAT);
+    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,GL10.GL_LINEAR);
+    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,GL10.GL_LINEAR);
+    	gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,GL10.GL_MODULATE);		
+		
+		
+		for (int i = 0; i < this._materials.length; i++) {
 			final Material mt_ptr=this._materials[i];
+			
 			// マテリアル設定
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, mt_ptr.color, 0);
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, mt_ptr.color, 4);
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, mt_ptr.color,8);
-			gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, mt_ptr.fShininess);
+			gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mt_ptr.color, 0);
+			gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mt_ptr.color, 4);
+			gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mt_ptr.color,8);
+			gl.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, mt_ptr.fShininess);
 
             //カリング判定：何となくうまくいったから
             if ((0x100 & mt_ptr.unknown) == 0x100)
             {
-            	gl.glDisable(GL.GL_CULL_FACE);
+            	gl.glDisable(GL10.GL_CULL_FACE);
             }
             else
             {
-            	gl.glEnable(GL.GL_CULL_FACE);
+            	gl.glEnable(GL10.GL_CULL_FACE);
             }
             
 			if (mt_ptr.texture_id!=0) {
 				// テクスチャありならBindする
-				gl.glEnable(GL.GL_TEXTURE_2D);
-				gl.glBindTexture(GL.GL_TEXTURE_2D, mt_ptr.texture_id);
+				gl.glEnable(GL10.GL_TEXTURE_2D);
+				gl.glBindTexture(GL10.GL_TEXTURE_2D, mt_ptr.texture_id);
 			} else {
 				// テクスチャなし
-				gl.glDisable(GL.GL_TEXTURE_2D);
+				gl.glDisable(GL10.GL_TEXTURE_2D);
 			}
 			// 頂点インデックスを指定してポリゴン描画
-			gl.glDrawElements(GL.GL_TRIANGLES, mt_ptr.ulNumIndices, GL.GL_UNSIGNED_SHORT, mt_ptr.indices);
+			gl.glDrawElements(GL10.GL_TRIANGLES, mt_ptr.ulNumIndices, GL10.GL_UNSIGNED_SHORT,mt_ptr.indices);
 		}
-		gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
-		gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
-		gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
 		return;
-	}
-
+	}	
     private static FloatBuffer makeFloatBuffer(int i_size)
     {
         ByteBuffer bb = ByteBuffer.allocateDirect(i_size*4);
