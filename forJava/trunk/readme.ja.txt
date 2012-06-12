@@ -1,7 +1,7 @@
 NyMmd
 Copyright (C)2009 nyatla
 
-version 1.1.0
+version 2.0.0
 
 http://nyatla.jp/
 wm(at)nyatla.jp
@@ -19,7 +19,7 @@ http://ppyy.hp.infoseek.co.jp/
 
 NyMmdは、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能を持ちます。
 
-現在対応しているレンダラは、OpenGLのみです。
+現在対応しているレンダラは、OpenGL/AndroidのOpenGLESです。
 
 
 
