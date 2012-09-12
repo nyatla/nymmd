@@ -1,4 +1,4 @@
-NyMmd
+NyMmd for Java
 Copyright (C)2009-2012 nyatla
 
 version 2.0.1
@@ -14,7 +14,7 @@ ARToolKit依存のコードを取り除いて、他言語対応に向けてAPI�
 整備し直したクラスライブリです。
 
 ARTK_MMDはこちらで公開されています。
-http://ppyy.hp.infoseek.co.jp/
+http://ppyy.if.land.to/artk_mmd.html
 
 
 NyMmdは、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能を持ちます。
@@ -54,7 +54,7 @@ NyMmdは、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能�
 
 
 ・ライセンス
-NyMmdは、MITライセンスでの配布です。
+NyMmd for Javaは、2.0.1よりMITライセンスで配布しています。
 ソースコード毎のライセンスについては、ソースコード先頭の署名をご確認ください。
 
 
@@ -64,8 +64,9 @@ NyMmdは、MITライセンスでの配布です。
 
 PY さん
  ARTK_MMDを開発し、ソースコードを公開してくださいました。
- 有難うございます。
- http://ppyy.hp.infoseek.co.jp/
+ また、MMDプレイヤー部分のソースコードについて、MITライセンスでの配布を許可
+ していただきました。有難うございます。
+ http://ppyy.if.land.to/artk_mmd.html
 
 樋口M さん
  MikuMikuDanceを開発してくださいました。
