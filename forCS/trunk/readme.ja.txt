@@ -1,7 +1,7 @@
-NyMmd
-Copyright (C)2009 nyatla
+NyMmd for C#
+Copyright (C)2009-2012 nyatla
 
-version 1.1.0 (Java版の1.1.0と同機能)
+version 1.1.1 (Java版の1.1.0と同機能)
 
 http://nyatla.jp/
 wm(at)nyatla.jp
@@ -14,10 +14,10 @@ ARToolKit依存のコードを取り除いて、他言語対応に向けてAPI�
 整備し直したクラスライブリです。
 
 ARTK_MMDはこちらで公開されています。
-http://ppyy.hp.infoseek.co.jp/
+http://ppyy.if.land.to/artk_mmd.html
 
 
-NyMmd　for C#は、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能を持ちます。
+NyMmd for C#は、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能を持ちます。
 
 現在対応しているレンダラは、ManagedDirect3Dのみです。
 
@@ -47,9 +47,9 @@ NyMmd　for C#は、MikuMikuDanceのVMD/PMDファイルの読み込みと、再�
 
 
 ・ライセンス
-NyMmdは、ARTK_MMDのGPLv2ライセンスを継承しています。
+NyMmd for C#は、1.1.1よりMITライセンスで配布しています。
 
-GPLについては、LICENCE.txtをお読みください。
+詳しくはLICENCE.txtをお読みください。
 
 ソースコード毎のライセンスについては、ソースコード先頭の署名をご確認ください。
 
@@ -60,8 +60,9 @@ GPLについては、LICENCE.txtをお読みください。
 
 PY さん
  ARTK_MMDを開発し、ソースコードを公開してくださいました。
- 有難うございます。
- http://ppyy.hp.infoseek.co.jp/
+ また、MMDプレイヤー部分のソースコードについて、MITライセンスでの配布を許可
+ していただきました。有難うございます。
+ http://ppyy.if.land.to/artk_mmd.html
 
 樋口M さん
  MikuMikuDanceを開発してくださいました。
