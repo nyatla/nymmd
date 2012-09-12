@@ -1,7 +1,7 @@
 NyMmd
-Copyright (C)2009 nyatla
+Copyright (C)2009-2012 nyatla
 
-version 2.0.0
+version 2.0.1
 
 http://nyatla.jp/
 wm(at)nyatla.jp
@@ -54,10 +54,7 @@ NyMmdは、MikuMikuDanceのVMD/PMDファイルの読み込みと、再生機能�
 
 
 ・ライセンス
-NyMmdは、ARTK_MMDのGPLv2ライセンスを継承しています。
-
-GPLについては、LICENCE.txtをお読みください。
-
+NyMmdは、MITライセンスでの配布です。
 ソースコード毎のライセンスについては、ソースコード先頭の署名をご確認ください。
 
 

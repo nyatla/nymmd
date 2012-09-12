@@ -1,32 +1,38 @@
 /* 
- * PROJECT: MMD for Java
+ * PROJECT: NyMmd
  * --------------------------------------------------------------------------------
- * This work is based on the ARTK_MMD v0.1 
- *   PY
- * http://ppyy.hp.infoseek.co.jp/
+ * The MMD for Java is Java version MMD Motion player class library.
+ * NyMmd is modules which removed the ARToolKit origin codes from ARTK_MMD,
+ * and was ported to Java. 
+ *
+ * This is based on the ARTK_MMD v0.1 by PY.
+ * http://ppyy.if.land.to/artk_mmd.html
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
- * The MMD for Java is Java version MMD class library.
- * Copyright (C)2009 nyatla
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The MIT License
+ * Copyright (C)2008-2012 nyatla
+ * nyatla39<at>gmail.com
+ * http://nyatla.jp
  * 
- * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  * 
- * For further information please contact.
- *	http://nyatla.jp/
- *	<airmail(at)ebony.plala.or.jp>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  * 
  */
 package jp.nyatla.nymmd.struct.pmd;
